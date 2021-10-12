@@ -77,6 +77,7 @@ SALIENCY_PARAMS = {
 
 @change("task_active")
 def task_change(task_active, **kwargs):
+    """Task is changing"""
     if task_active in TASK_DEPENDENCY:
         for key, value in TASK_DEPENDENCY[task_active].items():
             update_state(key, value)
@@ -90,17 +91,20 @@ def task_change(task_active, **kwargs):
 
 @change("model_active")
 def model_change(model_active, **kwargs):
+    """ML model is changing"""
     print(f"Use model {model_active}")
 
 
 @change("saliency_active")
 def saliency_change(saliency_active, **kwargs):
+    """Saliency algo is changing"""
     print("Use saliency", saliency_active)
     update_state("saliency_parameters", SALIENCY_PARAMS[saliency_active])
 
 
 @change("input_file")
 def process_file(input_file, image_url_1, image_url_2, image_count, **kwargs):
+    """An image is getting loaded. Process the given image"""
     if not input_file:
         return
 
@@ -114,6 +118,7 @@ def process_file(input_file, image_url_1, image_url_2, image_count, **kwargs):
 
 @change("image_url_1", "image_url_2")
 def reset_image(image_url_1, image_url_2, image_count, **kwargs):
+    """Method called when image_url_X is changed which can happen when setting them but also when cleared on the client side"""
     count = 0
     if image_url_1:
         count += 1
@@ -125,12 +130,14 @@ def reset_image(image_url_1, image_url_2, image_count, **kwargs):
 
 
 def run_model():
+    """Method called when click prediction button"""
     print("Exec ML code for prediction")
     (image_url_1,) = get_state("image_url_1")
     update_state("predict_url", image_url_1)
 
 
 def initialize(task_active, **kwargs):
+    """Method called at startup time"""
     task_change(task_active)
     (saliency_active,) = get_state("saliency_active")
     saliency_change(saliency_active)
