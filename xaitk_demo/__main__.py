@@ -1,5 +1,5 @@
 from trame import start
-from .core import task_change
+from .core import initialize
 from .ui import layout
 
-start(layout, on_ready=task_change)
+start(layout, on_ready=initialize)

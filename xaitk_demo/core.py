@@ -21,7 +21,6 @@ TASK_DEPENDENCY = {
             {"text": "Sliding Window", "value": "SlidingWindow"},
             {"text": "Similarity Scoring", "value": "SimilarityScoring"},
         ],
-        "saliency_parameters": ["window_size", "stride", "similarity_metric"],
         # Task => model
         "model_active": "resnet-50",
         "model_available": [
@@ -39,7 +38,6 @@ TASK_DEPENDENCY = {
             {"text": "RISE Grid", "value": "RISEGrid"},
             {"text": "DRISE Scoring", "value": "DRISEScoring"},
         ],
-        "saliency_parameters": ["n", "s", "p1", "proximity_metric", "seed", "threads"],
         # Task => model
         "model_active": "pytorch-a",
         "model_available": [
@@ -56,7 +54,6 @@ TASK_DEPENDENCY = {
             {"text": "RISE Stack", "value": "RISEStack"},
             {"text": "Sliding Window Stack", "value": "SlidingWindowStack"},
         ],
-        "saliency_parameters": ["n", "s", "p1", "proximity_metric", "seed", "threads"],
         # Task => model
         "model_active": "pytorch-a",
         "model_available": [
@@ -66,6 +63,15 @@ TASK_DEPENDENCY = {
         # Task => input
         "image_count": 1,
     },
+}
+
+SALIENCY_PARAMS = {
+    "SlidingWindow": ["window_size", "stride"],
+    "SimilarityScoring": ["window_size", "stride", "similarity_metric"],
+    "RISEGrid": ["n", "s", "p1", "proximity_metric", "seed", "threads"],
+    "DRISEScoring": ["n", "s", "p1", "proximity_metric", "seed", "threads"],
+    "RISEStack": ["n", "s", "p1", "proximity_metric", "seed", "threads"],
+    "SlidingWindowStack": ["n", "s", "p1", "proximity_metric", "seed", "threads"],
 }
 
 
@@ -90,6 +96,7 @@ def model_change(model_active, **kwargs):
 @change("saliency_active")
 def saliency_change(saliency_active, **kwargs):
     print("Use saliency", saliency_active)
+    update_state("saliency_parameters", SALIENCY_PARAMS[saliency_active])
 
 
 @change("input_file")
@@ -121,3 +128,9 @@ def run_model():
     print("Exec ML code for prediction")
     (image_url_1,) = get_state("image_url_1")
     update_state("predict_url", image_url_1)
+
+
+def initialize(task_active, **kwargs):
+    task_change(task_active)
+    (saliency_active,) = get_state("saliency_active")
+    saliency_change(saliency_active)
