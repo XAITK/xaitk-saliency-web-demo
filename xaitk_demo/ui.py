@@ -120,58 +120,129 @@ def xai_parameters():
     ]
 
     _content.children += [
-        vuetify.VTextField(
-            label="Window Size",
+        vuetify.VRow(
+            [
+                vuetify.VTextField(
+                    label="Window Size (Height)",
+                    v_model="window_size[0]",
+                    type="number",
+                    classes="mx-2",
+                    change="dirty('window_size')",
+                ),
+                vuetify.VTextField(
+                    label="Window Size (Width)",
+                    v_model="window_size[1]",
+                    type="number",
+                    classes="mx-2",
+                    change="dirty('window_size')",
+                ),
+            ],
             v_show="saliency_parameters.includes('window_size')",
-            v_model=("window_size", 5),
-            type="number",
         ),
-        vuetify.VTextField(
-            label="Strid",
+        vuetify.VRow(
+            [
+                vuetify.VTextField(
+                    label="Stride Size (Height step)",
+                    v_model="stride[0]",
+                    type="number",
+                    classes="mx-2",
+                    change="dirty('stride')",
+                ),
+                vuetify.VTextField(
+                    label="Stride Size (Width step)",
+                    v_model="stride[1]",
+                    type="number",
+                    classes="mx-2",
+                    change="dirty('stride')",
+                ),
+            ],
             v_show="saliency_parameters.includes('stride')",
-            v_model=("stride", 5),
-            type="number",
         ),
-        vuetify.VTextField(
+        vuetify.VSelect(
             label="Similarity Metric",
             v_show="saliency_parameters.includes('similarity_metric')",
-            v_model=("similarity_metric", 5),
+            v_model=("similarity_metric", "braycurtis"),
+            items=(
+                "similarity_metric_items",
+                [
+                    "braycurtis",
+                    "canberra",
+                    "chebyshev",
+                    "cityblock",
+                    "correlation",
+                    "cosine",
+                    "dice",
+                    "euclidean",
+                    "hamming",
+                    "jaccard",
+                    "jensenshannon",
+                    "kulsinski",
+                    "mahalanobis",
+                    "matching",
+                    "minkowski",
+                    "rogerstanimoto",
+                    "russellrao",
+                    "seuclidean",
+                    "sokalmichener",
+                    "sokalsneath",
+                    "sqeuclidean",
+                    "wminkowski",
+                    "yule",
+                ],
+            ),
             type="number",
         ),
         vuetify.VTextField(
-            label="N",
+            label="Number of random masks used in the algorithm",
             v_show="saliency_parameters.includes('n')",
-            v_model=("n", 5),
+            v_model=("n", 1000),
             type="number",
         ),
         vuetify.VTextField(
-            label="S",
+            label="Spatial resolution of the small masking grid",
             v_show="saliency_parameters.includes('s')",
-            v_model=("s", 5),
+            v_model=("s", 8),
             type="number",
         ),
-        vuetify.VTextField(
+        vuetify.VSlider(
             label="P1",
+            persistent_hint=True,
+            hint="Probability of the grid cell being set to 1 (otherwise 0). This should be a float value in the [0, 1] range.",
             v_show="saliency_parameters.includes('p1')",
-            v_model=("p1", 5),
-            type="number",
-        ),
-        vuetify.VTextField(
-            label="Proximity Metric",
-            v_show="saliency_parameters.includes('proximity_metric')",
-            v_model=("proximity_metric", 5),
-            type="number",
+            v_model=("p1", 0.5),
+            min="0",
+            max="1",
+            step="0.01",
+            thumb_size="24",
+            thumb_label="always",
+            classes="my-4",
         ),
         vuetify.VTextField(
             label="Seed",
             v_show="saliency_parameters.includes('seed')",
-            v_model=("seed", 5),
+            v_model=("seed", 1234),
             type="number",
+            hint="A seed to pass into the constructed random number generator to allow for reproducibility",
+            persistent_hint=True,
+            classes="my-4",
         ),
-        vuetify.VTextField(
+        vuetify.VSlider(
             label="Threads",
             v_show="saliency_parameters.includes('threads')",
-            v_model=("threads", 5),
+            v_model=("threads", 0),
+            min="0",
+            max="32",
+            hint="The number of threads to utilize when generating masks. If this is <=0 or None, no threading is used and processing is performed in-line serially.",
+            persistent_hint=True,
+            thumb_size="24",
+            thumb_label="always",
+            classes="my-6",
+        ),
+        vuetify.VSelect(
+            label="Proximity Metric",
+            v_show="saliency_parameters.includes('proximity_metric')",
+            v_model=("proximity_metric", "braycurtis"),
+            items=["similarity_metric_items"],
             type="number",
         ),
     ]
@@ -237,4 +308,6 @@ layout.content.children += [
 
 layout.state = {
     "input_file": None,
+    "window_size": (512, 512),
+    "stride": (10, 10),
 }
