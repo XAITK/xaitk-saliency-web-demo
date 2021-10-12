@@ -24,7 +24,7 @@ def image_selector(data_url, **kwargs):
             icon_button(
                 "mdi-close-thick",
                 absolute=True,
-                style="top: -2px; right: -2px",
+                style="top: -2px; right: -2px; background: white;",
                 outlined=True,
                 x_small=True,
                 click=f"{data_url} = null",
