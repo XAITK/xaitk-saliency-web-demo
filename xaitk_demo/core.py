@@ -1,6 +1,23 @@
 from trame import change, get_state, update_state
 
+import io
 import base64
+import numpy as np
+from PIL import Image
+
+# pytorch
+import torch.nn as nn
+import torchvision.models as models
+import torchvision.transforms as transforms
+
+# xaitk-saliency
+from xaitk_saliency.impls.perturb_image.rise import RISEGrid
+from xaitk_saliency.impls.perturb_image.sliding_window import SlidingWindow
+from xaitk_saliency.impls.gen_detector_prop_sal.drise_scoring import DRISEScoring
+from xaitk_saliency.impls.gen_descriptor_sim_sal.similarity_scoring import SimilarityScoring
+from xaitk_saliency.impls.gen_image_classifier_blackbox_sal.rise import RISEStack
+from xaitk_saliency.impls.gen_image_classifier_blackbox_sal.slidingwindow import SlidingWindowStack
+
 
 # -----------------------------------------------------------------------------
 # Application logic
@@ -39,10 +56,10 @@ TASK_DEPENDENCY = {
             {"text": "DRISE Scoring", "value": "DRISEScoring"},
         ],
         # Task => model
-        "model_active": "pytorch-a",
+        "model_active": "faster-rcnn",
         "model_available": [
-            {"text": "PyTorch A", "value": "pytorch-a"},
-            {"text": "PyTorch B", "value": "pytorch-b"},
+            {"text": "Faster R-CNN", "value": "faster-rcnn"},
+            {"text": "RetinaNet", "value": "retina-net"},
         ],
         # Task => input
         "image_count": 1,
@@ -55,10 +72,11 @@ TASK_DEPENDENCY = {
             {"text": "Sliding Window Stack", "value": "SlidingWindowStack"},
         ],
         # Task => model
-        "model_active": "pytorch-a",
+        "model_active": "resnet-50",
         "model_available": [
-            {"text": "PyTorch A", "value": "pytorch-a"},
-            {"text": "PyTorch B", "value": "pytorch-b"},
+            {"text": "ResNet-50", "value": "resnet-50"},
+            {"text": "AlexNet", "value": "alexnet"},
+            {"text": "VGG-16", "value": "vgg-16"},
         ],
         # Task => input
         "image_count": 1,
@@ -67,11 +85,19 @@ TASK_DEPENDENCY = {
 
 SALIENCY_PARAMS = {
     "SlidingWindow": ["window_size", "stride"],
-    "SimilarityScoring": ["window_size", "stride", "similarity_metric"],
-    "RISEGrid": ["n", "s", "p1", "proximity_metric", "seed", "threads"],
-    "DRISEScoring": ["n", "s", "p1", "proximity_metric", "seed", "threads"],
-    "RISEStack": ["n", "s", "p1", "proximity_metric", "seed", "threads"],
-    "SlidingWindowStack": ["n", "s", "p1", "proximity_metric", "seed", "threads"],
+    "SimilarityScoring": ["similarity_metric"],
+    "RISEGrid": ["n", "s", "p1", "seed", "threads"],
+    "DRISEScoring": ["proximity_metric"],
+    "RISEStack": ["n", "s", "p1", "seed", "threads", "debiased"],
+    "SlidingWindowStack": ["window_size", "stride", "threads"],
+}
+
+AI_MAP = {
+    "resnet-50": models.resnet50(pretrained=True),
+    "alexnet": models.alexnet(pretrained=True),
+    "vgg-16": models.vgg16(pretrained=True),
+    "faster-rcnn": models.detection.fasterrcnn_resnet50_fpn(pretrained=True),
+    "retina-net": models.detection.retinanet_resnet50_fpn(pretrained=True),
 }
 
 
@@ -92,7 +118,16 @@ def task_change(task_active, **kwargs):
 @change("model_active")
 def model_change(model_active, **kwargs):
     """ML model is changing"""
-    print(f"Use model {model_active}")
+    if model_active in AI_MAP:
+        print(f"Use model {model_active}")
+        model = AI_MAP[model_active]
+
+        # if task_active == 'similarity':
+        #     model = nn.Sequential(**model.children()[-1])
+
+        return model
+
+    print(f"Could not find {model_active} in {AI_MAP.keys()}")
 
 
 @change("saliency_active")
@@ -135,9 +170,27 @@ def run_model():
     (image_url_1,) = get_state("image_url_1")
     update_state("predict_url", image_url_1)
 
+    header, data = image_url_1.split(',')
+    image = Image.open(io.BytesIO(base64.decodebytes(data.encode('utf-8'))))
+
+    # TODO: Add model prediction (e.g. logits)
+    model(model_loader(image))
+
 
 def initialize(task_active, **kwargs):
     """Method called at startup time"""
     task_change(task_active)
     (saliency_active,) = get_state("saliency_active")
     saliency_change(saliency_active)
+
+
+# Pytorch pre-processing
+model_loader = transforms.Compose([
+    transforms.ToPILImage(),
+    transforms.Resize((224, 224)),
+    transforms.ToTensor(),
+    transforms.Normalize(
+        mean=[0.485, 0.456, 0.406],
+        std=[0.229, 0.224, 0.225]
+    ),
+])
