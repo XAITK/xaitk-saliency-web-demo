@@ -1,23 +1,6 @@
-from trame import change, get_state, update_state
-
-import io
 import base64
-import numpy as np
-from PIL import Image
-
-# pytorch
-import torch.nn as nn
-import torchvision.models as models
-import torchvision.transforms as transforms
-
-# xaitk-saliency
-from xaitk_saliency.impls.perturb_image.rise import RISEGrid
-from xaitk_saliency.impls.perturb_image.sliding_window import SlidingWindow
-from xaitk_saliency.impls.gen_detector_prop_sal.drise_scoring import DRISEScoring
-from xaitk_saliency.impls.gen_descriptor_sim_sal.similarity_scoring import SimilarityScoring
-from xaitk_saliency.impls.gen_image_classifier_blackbox_sal.rise import RISEStack
-from xaitk_saliency.impls.gen_image_classifier_blackbox_sal.slidingwindow import SlidingWindowStack
-
+from trame import change, get_state, update_state
+from .ai import XaiController
 
 # -----------------------------------------------------------------------------
 # Application logic
@@ -91,14 +74,20 @@ SALIENCY_PARAMS = {
     "RISEStack": ["n", "s", "p1", "seed", "threads", "debiased"],
     "SlidingWindowStack": ["window_size", "stride", "threads"],
 }
+ALL_SALIENCY_PARAMS = [
+    "window_size",
+    "stride",
+    "similarity_metric",
+    "n",
+    "s",
+    "p1",
+    "seed",
+    "threads",
+    "proximity_metric",
+    "debiased",
+]
 
-AI_MAP = {
-    "resnet-50": models.resnet50(pretrained=True),
-    "alexnet": models.alexnet(pretrained=True),
-    "vgg-16": models.vgg16(pretrained=True),
-    "faster-rcnn": models.detection.fasterrcnn_resnet50_fpn(pretrained=True),
-    "retina-net": models.detection.retinanet_resnet50_fpn(pretrained=True),
-}
+XAI = XaiController()
 
 
 @change("task_active")
@@ -118,16 +107,7 @@ def task_change(task_active, **kwargs):
 @change("model_active")
 def model_change(model_active, **kwargs):
     """ML model is changing"""
-    if model_active in AI_MAP:
-        print(f"Use model {model_active}")
-        model = AI_MAP[model_active]
-
-        # if task_active == 'similarity':
-        #     model = nn.Sequential(**model.children()[-1])
-
-        return model
-
-    print(f"Could not find {model_active} in {AI_MAP.keys()}")
+    XAI.set_model(model_active)
 
 
 @change("saliency_active")
@@ -135,6 +115,7 @@ def saliency_change(saliency_active, **kwargs):
     """Saliency algo is changing"""
     print("Use saliency", saliency_active)
     update_state("saliency_parameters", SALIENCY_PARAMS[saliency_active])
+    XAI.set_saliency_method(saliency_active)
 
 
 @change("input_file")
@@ -147,8 +128,10 @@ def process_file(input_file, image_url_1, image_url_2, image_count, **kwargs):
     _url = f"data:{input_file.get('type')};base64,{base64.encodebytes(input_file.get('content')).decode('utf-8')}"
     if not image_url_1 or image_count == 1:
         update_state("image_url_1", _url)
+        XAI.set_image_1(input_file.get("content"))
     elif not image_url_2 and image_count == 2:
         update_state("image_url_2", _url)
+        XAI.set_image_2(input_file.get("content"))
 
 
 @change("image_url_1", "image_url_2")
@@ -164,17 +147,20 @@ def reset_image(image_url_1, image_url_2, image_count, **kwargs):
     update_state("need_input", count < image_count)
 
 
+@change(*ALL_SALIENCY_PARAMS)
+def saliency_param_update(**kwargs):
+    params = {}
+    for name in ALL_SALIENCY_PARAMS:
+        params[name] = kwargs.get(name)
+    XAI.update_saliency_params(**params)
+
+
 def run_model():
     """Method called when click prediction button"""
     print("Exec ML code for prediction")
     (image_url_1,) = get_state("image_url_1")
     update_state("predict_url", image_url_1)
-
-    header, data = image_url_1.split(',')
-    image = Image.open(io.BytesIO(base64.decodebytes(data.encode('utf-8'))))
-
-    # TODO: Add model prediction (e.g. logits)
-    model(model_loader(image))
+    XAI.run_model()
 
 
 def initialize(task_active, **kwargs):
@@ -182,15 +168,3 @@ def initialize(task_active, **kwargs):
     task_change(task_active)
     (saliency_active,) = get_state("saliency_active")
     saliency_change(saliency_active)
-
-
-# Pytorch pre-processing
-model_loader = transforms.Compose([
-    transforms.ToPILImage(),
-    transforms.Resize((224, 224)),
-    transforms.ToTensor(),
-    transforms.Normalize(
-        mean=[0.485, 0.456, 0.406],
-        std=[0.229, 0.224, 0.225]
-    ),
-])
