@@ -16,10 +16,11 @@ TASKS = [
 TASK_DEPENDENCY = {
     "similarity": {
         # Task => saliency
-        "saliency_active": "SlidingWindow",
+        "saliency_active": "similarity-saliency",
         "saliency_available": [
-            {"text": "Sliding Window", "value": "SlidingWindow"},
-            {"text": "Similarity Scoring", "value": "SimilarityScoring"},
+            {"text": "Default", "value": "similarity-saliency"},
+            # {"text": "Sliding Window", "value": "SlidingWindow"},
+            # {"text": "Similarity Scoring", "value": "SimilarityScoring"},
         ],
         # Task => model
         "model_active": "resnet-50",
@@ -33,10 +34,11 @@ TASK_DEPENDENCY = {
     },
     "detection": {
         # Task => saliency
-        "saliency_active": "RISEGrid",
+        "saliency_active": "detection-saliency",
         "saliency_available": [
-            {"text": "RISE Grid", "value": "RISEGrid"},
-            {"text": "DRISE Scoring", "value": "DRISEScoring"},
+            {"text": "Default", "value": "detection-saliency"},
+            # {"text": "RISE Grid", "value": "RISEGrid"},
+            # {"text": "DRISE Scoring", "value": "DRISEScoring"},
         ],
         # Task => model
         "model_active": "faster-rcnn",
@@ -73,19 +75,21 @@ SALIENCY_PARAMS = {
     "DRISEScoring": ["proximity_metric"],
     "RISEStack": ["n", "s", "p1", "seed", "threads", "debiased"],
     "SlidingWindowStack": ["window_size", "stride", "threads"],
+    "similarity-saliency": ["window_size", "stride", "similarity_metric"],
+    "detection-saliency": ["n", "s", "p1", "seed", "threads", "proximity_metric"],
 }
-ALL_SALIENCY_PARAMS = [
-    "window_size",
-    "stride",
-    "similarity_metric",
-    "n",
-    "s",
-    "p1",
-    "seed",
-    "threads",
-    "proximity_metric",
-    "debiased",
-]
+ALL_SALIENCY_PARAMS = {
+    "window_size": int,
+    "stride": int,
+    "similarity_metric": str,
+    "n": int,
+    "s": int,
+    "p1": float,
+    "seed": int,
+    "threads": int,
+    "proximity_metric": str,
+    "debiased": bool,
+}
 
 XAI = XaiController()
 
@@ -154,12 +158,20 @@ def reset_image(image_url_1, image_url_2, image_count, **kwargs):
     update_state("need_input", count < image_count)
 
 
-@change(*ALL_SALIENCY_PARAMS)
+@change(*list(ALL_SALIENCY_PARAMS.keys()))
 def saliency_param_update(**kwargs):
     print("Updating saliency params")
     params = {}
     for name in ALL_SALIENCY_PARAMS:
-        params[name] = kwargs.get(name)
+        value = kwargs.get(name)
+        convert = ALL_SALIENCY_PARAMS[name]
+        if isinstance(value, list):
+            params[name] = [convert(v) for v in value]
+        else:
+            params[name] = convert(value)
+        print(f"before {name}={value} {type(value)}")
+        print(f"after {name}={params[name]} {type(params[name])}")
+
     XAI.update_saliency_params(**params)
     (saliency_active,) = get_state("saliency_active")
     saliency_change(saliency_active, **params)

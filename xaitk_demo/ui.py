@@ -245,6 +245,11 @@ def xai_parameters():
             items=["similarity_metric_items"],
             type="number",
         ),
+        vuetify.VSwitch(
+            label="Debiased",
+            v_show="saliency_parameters.includes('debiased')",
+            v_model=("debiased", False)
+        ),
     ]
 
     return _card
@@ -285,6 +290,7 @@ layout.toolbar.children += [
     ),
     vuetify.VSelect(
         label="Saliency Algorithm",
+        v_show="saliency_available.length > 1",
         v_model=("saliency_active", ""),
         items=("saliency_available", []),
         **compact_styles,
