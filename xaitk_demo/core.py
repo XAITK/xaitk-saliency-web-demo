@@ -103,10 +103,14 @@ def task_change(task_active, **kwargs):
     update_state("image_url_2", None)
     update_state("predict_url", None)
 
+    print("Use task", task_active)
+    XAI.set_task(task_active)
+
 
 @change("model_active")
 def model_change(model_active, **kwargs):
     """ML model is changing"""
+    print("Use model", model_active)
     XAI.set_model(model_active)
 
 
@@ -115,7 +119,10 @@ def saliency_change(saliency_active, **kwargs):
     """Saliency algo is changing"""
     print("Use saliency", saliency_active)
     update_state("saliency_parameters", SALIENCY_PARAMS[saliency_active])
-    XAI.set_saliency_method(saliency_active)
+    params = {}
+    for name in SALIENCY_PARAMS[saliency_active]:
+        params[name] = kwargs.get(name)
+    XAI.set_saliency_method(saliency_active, params)
 
 
 @change("input_file")
@@ -149,10 +156,13 @@ def reset_image(image_url_1, image_url_2, image_count, **kwargs):
 
 @change(*ALL_SALIENCY_PARAMS)
 def saliency_param_update(**kwargs):
+    print("Updating saliency params")
     params = {}
     for name in ALL_SALIENCY_PARAMS:
         params[name] = kwargs.get(name)
     XAI.update_saliency_params(**params)
+    (saliency_active,) = get_state("saliency_active")
+    saliency_change(saliency_active, **params)
 
 
 def run_model():
@@ -163,8 +173,17 @@ def run_model():
     XAI.run_model()
 
 
+def run_saliency():
+    """Method called when click saliency button"""
+    print("Exec saliency code for explanation")
+    (image_url_1,) = get_state("image_url_1")
+    update_state("predict_url", image_url_1)
+    XAI.run_saliency()
+
+
 def initialize(task_active, **kwargs):
     """Method called at startup time"""
     task_change(task_active)
-    (saliency_active,) = get_state("saliency_active")
-    saliency_change(saliency_active)
+    (model_active,) = get_state("model_active")
+    model_change(model_active)
+    saliency_param_update(**kwargs)
