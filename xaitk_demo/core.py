@@ -19,8 +19,6 @@ TASK_DEPENDENCY = {
         "saliency_active": "similarity-saliency",
         "saliency_available": [
             {"text": "Default", "value": "similarity-saliency"},
-            # {"text": "Sliding Window", "value": "SlidingWindow"},
-            # {"text": "Similarity Scoring", "value": "SimilarityScoring"},
         ],
         # Task => model
         "model_active": "resnet-50",
@@ -37,8 +35,6 @@ TASK_DEPENDENCY = {
         "saliency_active": "detection-saliency",
         "saliency_available": [
             {"text": "Default", "value": "detection-saliency"},
-            # {"text": "RISE Grid", "value": "RISEGrid"},
-            # {"text": "DRISE Scoring", "value": "DRISEScoring"},
         ],
         # Task => model
         "model_active": "faster-rcnn",
@@ -69,19 +65,15 @@ TASK_DEPENDENCY = {
 }
 
 SALIENCY_PARAMS = {
-    "SlidingWindow": ["window_size", "stride"],
-    "SimilarityScoring": ["similarity_metric"],
-    "RISEGrid": ["n", "s", "p1", "seed", "threads"],
-    "DRISEScoring": ["proximity_metric"],
     "RISEStack": ["n", "s", "p1", "seed", "threads", "debiased"],
     "SlidingWindowStack": ["window_size", "stride", "threads"],
-    "similarity-saliency": ["window_size", "stride", "similarity_metric"],
+    "similarity-saliency": ["window_size", "stride", "proximity_metric"],
     "detection-saliency": ["n", "s", "p1", "seed", "threads", "proximity_metric"],
 }
+
 ALL_SALIENCY_PARAMS = {
     "window_size": int,
     "stride": int,
-    "similarity_metric": str,
     "n": int,
     "s": int,
     "p1": float,
@@ -125,7 +117,13 @@ def saliency_change(saliency_active, **kwargs):
     update_state("saliency_parameters", SALIENCY_PARAMS[saliency_active])
     params = {}
     for name in SALIENCY_PARAMS[saliency_active]:
-        params[name] = kwargs.get(name)
+        value = kwargs.get(name)
+        convert = ALL_SALIENCY_PARAMS[name]
+        if isinstance(value, list):
+            params[name] = [convert(v) for v in value]
+        else:
+            params[name] = convert(value)
+
     XAI.set_saliency_method(saliency_active, params)
 
 
@@ -169,8 +167,6 @@ def saliency_param_update(**kwargs):
             params[name] = [convert(v) for v in value]
         else:
             params[name] = convert(value)
-        print(f"before {name}={value} {type(value)}")
-        print(f"after {name}={params[name]} {type(params[name])}")
 
     XAI.update_saliency_params(**params)
     (saliency_active,) = get_state("saliency_active")

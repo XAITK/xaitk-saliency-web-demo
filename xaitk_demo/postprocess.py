@@ -89,6 +89,7 @@ def retinanet_postprocess_detections(self, head_outputs, anchors, image_shapes):
         image_boxes = []
         image_scores = []
         image_labels = []
+        image_anchors = []
 
         for box_regression_per_level, logits_per_level, anchors_per_level in \
                 zip(box_regression_per_image, logits_per_image, anchors_per_image):
@@ -117,19 +118,27 @@ def retinanet_postprocess_detections(self, head_outputs, anchors, image_shapes):
             image_boxes.append(boxes_per_level)
             image_scores.append(scores_per_level)
             image_labels.append(labels_per_level)
+            image_anchors.append(anchor_idxs)
 
         image_boxes = torch.cat(image_boxes, dim=0)
         image_scores = torch.cat(image_scores, dim=0)
         image_labels = torch.cat(image_labels, dim=0)
+        image_anchors = torch.cat(image_anchors, dim=0)
 
         # non-maximum suppression
         keep = box_ops.batched_nms(
             image_boxes, image_scores, image_labels, self.nms_thresh)
         keep = keep[:self.detections_per_img]
 
+        # Recover original class logits
+        level = torch.div(keep, num_topk, rounding_mode='floor')
+        image_logits = torch.sigmoid(torch.stack(
+            [logits_per_image[l][a] for (l, a) in zip(level, image_anchors[keep])]))
+
         detections.append({
             'boxes': image_boxes[keep],
-            'scores': image_scores[keep],
+            # remove background class
+            'scores': image_logits[:, 1:],
             'labels': image_labels[keep],
         })
 
