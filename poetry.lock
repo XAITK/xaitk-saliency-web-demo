@@ -394,7 +394,7 @@ numpy = ">=1.13.3"
 
 [[package]]
 name = "pywebvue"
-version = "2.2.0"
+version = "2.2.1"
 description = "Python server creating interactive vue app over WebSocket"
 category = "main"
 optional = false
@@ -1251,8 +1251,8 @@ pywavelets = [
     {file = "PyWavelets-1.1.1.tar.gz", hash = "sha256:1a64b40f6acb4ffbaccce0545d7fc641744f95351f62e4c6aaa40549326008c9"},
 ]
 pywebvue = [
-    {file = "pywebvue-2.2.0-py3-none-any.whl", hash = "sha256:40a1e53a21b50b38546a4748e4342405d41bdcc3623624623a4f5639220c771d"},
-    {file = "pywebvue-2.2.0.tar.gz", hash = "sha256:475acfa3a7684f4c158cb289beeb80491320fb67dbe56097ef11fcd206298ef4"},
+    {file = "pywebvue-2.2.1-py3-none-any.whl", hash = "sha256:6b4ddcedd8806cb03953647fe085c47758b33dbd728c79acfb9aae5102b986e2"},
+    {file = "pywebvue-2.2.1.tar.gz", hash = "sha256:93033e0f092e9c149681101d0f9e3497301883aa8f88104211070ef8033f3caa"},
 ]
 regex = [
     {file = "regex-2021.10.8-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:094a905e87a4171508c2a0e10217795f83c636ccc05ddf86e7272c26e14056ae"},

@@ -179,18 +179,14 @@ def saliency_param_update(**kwargs):
 def run_model():
     """Method called when click prediction button"""
     print("Exec ML code for prediction")
-    (image_url_1,) = get_state("image_url_1")
-    update_state("predict_url", image_url_1)
-    output = XAI.run_model()
+    from .ui import update_prediction
 
-    from .ui import update_model_chart
-    update_model_chart(output)
+    update_prediction(XAI.run_model())
+
 
 def run_saliency():
     """Method called when click saliency button"""
     print("Exec saliency code for explanation")
-    (image_url_1,) = get_state("image_url_1")
-    update_state("predict_url", image_url_1)
     output = XAI.run_saliency()
     print("run_saliency", output)
 

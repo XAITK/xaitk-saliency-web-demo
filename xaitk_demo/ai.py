@@ -277,6 +277,10 @@ class XaiController:
             topk = np.argsort(-preds)[:TOP_K]
             output = [(imagenet_categories[i], preds[i]) for i in topk]
             print(f"Predicted classes: {output}")
+            return {
+                "type": self._task,
+                "classes": output,
+            }
         elif self._task == "detection":
             boxes = preds[:, :4]
             scores = np.max(preds[:, 5:], axis=1)
@@ -286,14 +290,20 @@ class XaiController:
                 (coco_categories[scores_idx[i]], scores[i], boxes[i]) for i in topk
             ]
             print(f"Predicted bounding boxes: {output}")
+            return {
+                "type": self._task,
+                "detection": output,
+            }
         elif self._task == "similarity":
             preds_2 = self.predict(self._image_2)
             similarity = cosine_similarity(
                 preds.reshape(1, -1), preds_2.reshape(1, -1)
             ).item()
             print(f"Similarity score: {similarity}")
-
-        return output
+            return {
+                "type": self._task,
+                "similarity": similarity,
+            }
 
     def run_saliency(self):
         output = {}

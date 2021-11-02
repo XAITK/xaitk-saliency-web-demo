@@ -1,3 +1,4 @@
+from trame import update_state
 from trame.layouts import SinglePage
 from trame.html import vuetify, vega
 from trame.html import Div
@@ -71,10 +72,71 @@ def data_selection():
 # -----------------------------------------------------------------------------
 # Model Execution
 # -----------------------------------------------------------------------------
+def object_detection():
+    return """
+    <v-row>
+            <div style="position: relative;" v-show="task_active === 'detection'">
+                <img :src="image_url_1" />
+                <div
+                    v-for="item, idx in object_detections"
+                    :key="idx"
+                    :style="{
+                        position: 'absolute',
+                        zIndex: 1,
+                        left: `${Math.floor(item.rect[0])}px`,
+                        top: `${Math.floor(item.rect[1])}px`,
+                        width: `${Math.round(item.rect[2] - item.rect[0])}px`,
+                        height: `${Math.round(item.rect[3] - item.rect[1])}px`,
+                        border: 'solid 2px red',
+                        opacity: `${detection_id === idx ? 1 : 0.25}`
+                    }"
+                />
+
+            </div>
+            <v-row class="flex-shrink-1 justify-start align-start no-gutters" style="width: 25px;">
+                <v-sheet
+                    v-for="item, idx in object_detections"
+                    :key="idx"
+                    class="ma-2"
+                    style="cursor: pointer"
+                    elevation="4"
+                    width="125"
+                    height="40"
+                    rounded
+                    @mouseenter="detection_id = idx"
+                    @mouseleave="detection_id = -1"
+                >
+                    <v-container class="fill-height">
+                        <v-row class="px-3" align-self="center" align-content="center" justify="space-between">
+                            <div class="text-capitalize">{{ item.class }}:</div>
+                            <div>{{ item.probability }}%</div>
+                        </v-row>
+                    </v-container>
+                </v-sheet>
+            </v-row>
+    </v-row>
+    """
+
+
 def model_execution():
     _card, _header, _content = card(classes="ma-4 flex-sm-grow-1")
     _content.style = "min-height: 224px;"
-    _chart = vega.VegaEmbed(style="width: 100%")
+    _content.classes = "d-flex flex-shrink-1"
+
+    # classes UI
+    _chart = vega.VegaEmbed(
+        style="width: 100%", v_show="task_active === 'classification'"
+    )
+
+    # similarity UI
+    _similarity = vuetify.VProgressCircular(
+        "{{ Math.round(prediction_similarity) }} %",
+        v_show="task_active === 'similarity'",
+        size=192,
+        width=15,
+        color="teal",
+        value=("prediction_similarity", 0),
+    )
 
     _header.children += [
         icon_button(
@@ -89,6 +151,8 @@ def model_execution():
 
     _content.children += [
         _chart,
+        _similarity,
+        object_detection(),
     ]
 
     return _card, _chart
@@ -289,6 +353,12 @@ layout.toolbar.children += [
         **compact_styles,
         **combo_styles,
     ),
+    vuetify.VProgressLinear(
+        indeterminate=True,
+        absolute=True,
+        bottom=True,
+        active=("busy",),
+    ),
 ]
 
 model_content, model_chart = model_execution()
@@ -297,25 +367,47 @@ layout.content.children += [
     vuetify.VContainer(
         fluid=True,
         children=[
-            vuetify.VRow([data_selection(), model_content]),
-            vuetify.VRow([xai_parameters(), xai_viz()]),
+            vuetify.VRow(
+                [data_selection(), model_content], classes="d-flex flex-shrink-1"
+            ),
+            vuetify.VRow([xai_parameters(), xai_viz()], classes="d-flex flex-shrink-1"),
         ],
     )
 ]
 
+# -----------------------------------------------------------------------------
+# UI update helper
+# -----------------------------------------------------------------------------
 
-def update_model_chart(pred_classes):
-    df = pd.DataFrame(pred_classes, columns=["Class", "Score"])
+
+def update_prediction(results={}):
+    # classes
+    classes = results.get("classes", [])
+    df = pd.DataFrame(classes, columns=["Class", "Score"])
     chart = (
         alt.Chart(df)
         .mark_bar()
         .encode(x="Score", y="Class")
-        .properties(width="container", height=174)
+        .properties(width="container", height=145)
     )
 
     model_chart.update(chart)
 
-update_model_chart([])
+    # Similarity
+    update_state("prediction_similarity", results.get("similarity", 0) * 100)
+
+    # Detection
+    update_state(
+        "object_detections",
+        [
+            {"class": v[0], "probability": int(v[1] * 100), "rect": list(v[2])}
+            for v in results.get("detection", [])
+        ],
+    )
+
+
+# Reset UI
+update_prediction()
 
 # -----------------------------------------------------------------------------
 # Undefined but required state variables
@@ -325,4 +417,6 @@ layout.state = {
     "input_file": None,
     "window_size": [512, 512],
     "stride": [10, 10],
+    "object_detections": [],
+    "detection_id": -1,
 }
