@@ -138,9 +138,12 @@ def process_file(input_file, image_url_1, image_url_2, image_count, **kwargs):
     if not image_url_1 or image_count == 1:
         update_state("image_url_1", _url)
         XAI.set_image_1(input_file.get("content"))
+        if image_count == 1:
+            run_model()
     elif not image_url_2 and image_count == 2:
         update_state("image_url_2", _url)
         XAI.set_image_2(input_file.get("content"))
+        run_model()
 
 
 @change("image_url_1", "image_url_2")
