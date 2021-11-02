@@ -7,7 +7,7 @@ import pandas as pd
 import altair as alt
 
 from .core import TASKS, run_model, run_saliency
-from .ui_helper import icon_button, card, compact_styles, combo_styles
+from .ui_helper import icon_button, card, object_detection, compact_styles, combo_styles
 
 # -----------------------------------------------------------------------------
 # File Input (Images)
@@ -72,51 +72,6 @@ def data_selection():
 # -----------------------------------------------------------------------------
 # Model Execution
 # -----------------------------------------------------------------------------
-def object_detection():
-    return """
-    <v-row>
-            <div style="position: relative;" v-show="task_active === 'detection'">
-                <img :src="image_url_1" />
-                <div
-                    v-for="item, idx in object_detections"
-                    :key="idx"
-                    :style="{
-                        position: 'absolute',
-                        zIndex: 1,
-                        left: `${Math.floor(item.rect[0])}px`,
-                        top: `${Math.floor(item.rect[1])}px`,
-                        width: `${Math.round(item.rect[2] - item.rect[0])}px`,
-                        height: `${Math.round(item.rect[3] - item.rect[1])}px`,
-                        border: 'solid 2px red',
-                        opacity: `${detection_id === idx ? 1 : 0.25}`
-                    }"
-                />
-
-            </div>
-            <v-row class="flex-shrink-1 justify-start align-start no-gutters" style="width: 25px;">
-                <v-sheet
-                    v-for="item, idx in object_detections"
-                    :key="idx"
-                    class="ma-2"
-                    style="cursor: pointer"
-                    elevation="4"
-                    width="125"
-                    height="40"
-                    rounded
-                    @mouseenter="detection_id = idx"
-                    @mouseleave="detection_id = -1"
-                >
-                    <v-container class="fill-height">
-                        <v-row class="px-3" align-self="center" align-content="center" justify="space-between">
-                            <div class="text-capitalize">{{ item.class }}:</div>
-                            <div>{{ item.probability }}%</div>
-                        </v-row>
-                    </v-container>
-                </v-sheet>
-            </v-row>
-    </v-row>
-    """
-
 
 def model_execution():
     _card, _header, _content = card(classes="ma-4 flex-sm-grow-1")
@@ -138,6 +93,13 @@ def model_execution():
         value=("prediction_similarity", 0),
     )
 
+    # object detection UI
+    _detection = object_detection(
+        "task_active === 'detection'", # v-show
+        "object_detections",           # f-for
+        "object_detection_idx",        # selected rect idx
+    )
+
     _header.children += [
         icon_button(
             "mdi-run-fast",
@@ -152,7 +114,7 @@ def model_execution():
     _content.children += [
         _chart,
         _similarity,
-        object_detection(),
+        _detection,
     ]
 
     return _card, _chart
@@ -418,5 +380,5 @@ layout.state = {
     "window_size": [512, 512],
     "stride": [10, 10],
     "object_detections": [],
-    "detection_id": -1,
+    "object_detection_idx": -1,
 }

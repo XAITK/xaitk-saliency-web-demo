@@ -188,7 +188,9 @@ def run_saliency():
     """Method called when click saliency button"""
     print("Exec saliency code for explanation")
     output = XAI.run_saliency()
-    print("run_saliency", output)
+    print("run_saliency")
+    for key in output:
+        print(f"{key}: {output.shape} | {output.dtype}")
 
 
 def initialize(task_active, **kwargs):

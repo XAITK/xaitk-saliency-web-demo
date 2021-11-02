@@ -633,7 +633,7 @@ scipy = ["scipy"]
 
 [[package]]
 name = "trame"
-version = "1.3.4"
+version = "1.3.6"
 description = "Framework for building interactive Web applications quickly in plain Python"
 category = "main"
 optional = false
@@ -1453,8 +1453,8 @@ torchvision = [
     {file = "torchvision-0.10.1-cp39-cp39-win_amd64.whl", hash = "sha256:6c8fe90213be4bce590ac9647b34db022d5d1ae94f309a733b9a64e65232173a"},
 ]
 trame = [
-    {file = "trame-1.3.4-py3-none-any.whl", hash = "sha256:44130178917cd6b3024235b67fd719c2a46144245e150b674b4d7f8999559237"},
-    {file = "trame-1.3.4.tar.gz", hash = "sha256:d1b2ec06ab9fc8c9a0556724598fab791bbd66cf51787dcfdf45a2c824c4631d"},
+    {file = "trame-1.3.6-py3-none-any.whl", hash = "sha256:36af0967ee9df2a80163d8f040a28c51b819fb88b9f7f3060885afc88875a88f"},
+    {file = "trame-1.3.6.tar.gz", hash = "sha256:e3f9811d1b80a3a4d0824aeb27fd49cee546ea34657acf7c377dc63e293ccc9f"},
 ]
 typed-ast = [
     {file = "typed_ast-1.4.3-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:2068531575a125b87a41802130fa7e29f26c09a2833fea68d9a40cf33902eba6"},
