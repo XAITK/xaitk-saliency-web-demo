@@ -179,8 +179,9 @@ def run_model():
     (image_url_1,) = get_state("image_url_1")
     update_state("predict_url", image_url_1)
     output = XAI.run_model()
-    print("run_model", output)
 
+    from .ui import update_model_chart
+    update_model_chart(output)
 
 def run_saliency():
     """Method called when click saliency button"""

@@ -33,6 +33,7 @@ scipy = "^1.6.3"
 torch = "^1.9.1"
 torchvision = "^0.10.1"
 xaitk-saliency = "^0.4.0"
+altair = "^4.1.0"
 
 [tool.poetry.dev-dependencies]
 black = "^21.9b0"

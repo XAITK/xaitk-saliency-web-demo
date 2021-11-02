@@ -1,6 +1,9 @@
 from trame.layouts import SinglePage
-from trame.html import vuetify
+from trame.html import vuetify, vega
 from trame.html import Div
+
+import pandas as pd
+import altair as alt
 
 from .core import TASKS, run_model, run_saliency
 from .ui_helper import icon_button, card, compact_styles, combo_styles
@@ -71,6 +74,7 @@ def data_selection():
 def model_execution():
     _card, _header, _content = card(classes="ma-4 flex-sm-grow-1")
     _content.style = "min-height: 224px;"
+    _chart = vega.VegaEmbed(style="width: 100%")
 
     _header.children += [
         icon_button(
@@ -84,22 +88,10 @@ def model_execution():
     ]
 
     _content.children += [
-        vuetify.VRow(
-            [
-                vuetify.VImg(
-                    aspect_ratio=1,
-                    src=("predict_url", None),
-                    classes="elevation-2 ma-2",
-                    max_height="200px",
-                    max_width="200px",
-                    min_height="200px",
-                    min_width="200px",
-                ),
-            ]
-        ),
+        _chart,
     ]
 
-    return _card
+    return _card, _chart
 
 
 # -----------------------------------------------------------------------------
@@ -270,7 +262,7 @@ def xai_viz():
 # -----------------------------------------------------------------------------
 
 layout = SinglePage("xaiTK")
-layout.logo.content = "mdi-brain"
+layout.logo.children = [vuetify.VIcon("mdi-brain")]
 layout.title.content = "XAITK Saliency"
 
 layout.toolbar.children += [
@@ -299,15 +291,31 @@ layout.toolbar.children += [
     ),
 ]
 
+model_content, model_chart = model_execution()
+
 layout.content.children += [
     vuetify.VContainer(
         fluid=True,
         children=[
-            vuetify.VRow([data_selection(), model_execution()]),
+            vuetify.VRow([data_selection(), model_content]),
             vuetify.VRow([xai_parameters(), xai_viz()]),
         ],
     )
 ]
+
+
+def update_model_chart(pred_classes):
+    df = pd.DataFrame(pred_classes, columns=["Class", "Score"])
+    chart = (
+        alt.Chart(df)
+        .mark_bar()
+        .encode(x="Score", y="Class")
+        .properties(width="container", height=174)
+    )
+
+    model_chart.update(chart)
+
+update_model_chart([])
 
 # -----------------------------------------------------------------------------
 # Undefined but required state variables
