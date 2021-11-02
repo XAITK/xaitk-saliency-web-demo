@@ -178,7 +178,8 @@ def run_model():
     print("Exec ML code for prediction")
     (image_url_1,) = get_state("image_url_1")
     update_state("predict_url", image_url_1)
-    XAI.run_model()
+    output = XAI.run_model()
+    print("run_model", output)
 
 
 def run_saliency():
@@ -186,7 +187,8 @@ def run_saliency():
     print("Exec saliency code for explanation")
     (image_url_1,) = get_state("image_url_1")
     update_state("predict_url", image_url_1)
-    XAI.run_saliency()
+    output = XAI.run_saliency()
+    print("run_saliency", output)
 
 
 def initialize(task_active, **kwargs):

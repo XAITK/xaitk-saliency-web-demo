@@ -2,7 +2,7 @@ from trame.layouts import SinglePage
 from trame.html import vuetify
 from trame.html import Div
 
-from .core import TASKS, run_model
+from .core import TASKS, run_model, run_saliency
 from .ui_helper import icon_button, card, compact_styles, combo_styles
 
 # -----------------------------------------------------------------------------
@@ -241,7 +241,7 @@ def xai_parameters():
         vuetify.VSwitch(
             label="Debiased",
             v_show="saliency_parameters.includes('debiased')",
-            v_model=("debiased", False)
+            v_model=("debiased", False),
         ),
     ]
 
@@ -251,7 +251,15 @@ def xai_parameters():
 def xai_viz():
     _card, _header, _content = card(classes="ma-4 flex-sm-grow-1")
 
-    _header.children += ["XAI visualization"]
+    _header.children += [
+        icon_button(
+            "mdi-run-fast",
+            small=True,
+            classes="mr-2",
+            click=run_saliency,
+        ),
+        "XAI visualization",
+    ]
     _content.children += ["Hello world"]
 
     return _card
