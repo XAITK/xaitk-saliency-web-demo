@@ -183,22 +183,23 @@ coco_categories = [coco_categories[idx] for idx in valid_idxs]
 
 
 # SMQTK black-box classifier
-# TODO: Test this is working...
 class ClfModel(ClassifyImage):
     def __init__(self, model, idx):
         self.model = model
         self.idx = idx
 
     def get_labels(self):
-        return ["output"]
+        return [imagenet_categories[i] for i in self.idx]
 
+    @torch.no_grad()
     def classify_images(self, image_iter):
         for img in image_iter:
-            inp = torch.Tensor(img).permute(2, 0, 1).unsqueeze(0)
+            inp = imagenet_model_loader(img).unsqueeze(0)
             out = self.model(inp)[0, self.idx].detach().numpy()
-            yield dict(zip(self.get_labels(), [out]))
+            yield dict(zip(self.get_labels(), out))
 
     def get_config(self):
+        # Required by a parent class.
         return {}
 
 
@@ -210,6 +211,7 @@ class XaiController:
         self._saliency = None
         self._image_1 = None
         self._image_2 = None
+        self._preds = None
         self._saliency_params = {}
 
     def set_task(self, task_name):
@@ -260,7 +262,7 @@ class XaiController:
             output = self._model(coco_model_loader(input).unsqueeze(0))[0]
             boxes = output["boxes"].cpu().numpy()
             scores = output["scores"][:, valid_idxs].cpu().numpy()
-            output = format_detection(boxes, scores)
+            output = format_detection(boxes, scores)  # .astype('float32')
         else:
             output = self._model(imagenet_model_loader(input).unsqueeze(0)).squeeze()
             output = output.cpu().numpy()
@@ -277,8 +279,9 @@ class XaiController:
             topk = np.argsort(-preds)[:TOP_K]
             output = [(imagenet_categories[i], preds[i]) for i in topk]
             print(f"Predicted classes: {output}")
-            return {
+            self._preds = {
                 "type": self._task,
+                "topk": topk,
                 "classes": output,
             }
         elif self._task == "detection":
@@ -290,8 +293,9 @@ class XaiController:
                 (coco_categories[scores_idx[i]], scores[i], boxes[i]) for i in topk
             ]
             print(f"Predicted bounding boxes: {output}")
-            return {
+            self._preds = {
                 "type": self._task,
+                "topk": topk,
                 "detection": output,
             }
         elif self._task == "similarity":
@@ -300,16 +304,18 @@ class XaiController:
                 preds.reshape(1, -1), preds_2.reshape(1, -1)
             ).item()
             print(f"Similarity score: {similarity}")
-            return {
+            self._preds = {
                 "type": self._task,
                 "similarity": similarity,
             }
+        return self._preds
 
     def run_saliency(self):
         output = {}
         if self._task == "detection":
             # generate reference prediction
-            ref_preds = self.predict(self._image_1)
+            topk = self._preds["topk"]
+            ref_preds = self.predict(self._image_1)[topk, :]
             # generate perturbed predictions
             pert_masks = self._perturb(self._image_1)
             pert_imgs = occlude_image_batch(self._image_1, pert_masks, FILL)
@@ -342,7 +348,9 @@ class XaiController:
             }
         else:
             # classification
-            sal = self._saliency(self._image_1, ClfModel(self._model))
+            topk = self._preds["topk"]
+            self._saliency.fill = FILL
+            sal = self._saliency(self._image_1, ClfModel(self._model, topk))
             output = {
                 "type": "classification",
                 "saliency": sal,

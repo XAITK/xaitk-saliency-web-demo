@@ -189,8 +189,9 @@ def run_saliency():
     print("Exec saliency code for explanation")
     output = XAI.run_saliency()
     print("run_saliency")
-    for key in output:
-        print(f"{key}: {output.shape} | {output.dtype}")
+    for key, value in output.items():
+        if key != 'type':
+            print(f"{key}: {value.shape} | {value.dtype}")
 
 
 def initialize(task_active, **kwargs):

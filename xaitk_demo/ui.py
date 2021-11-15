@@ -377,8 +377,8 @@ update_prediction()
 
 layout.state = {
     "input_file": None,
-    "window_size": [512, 512],
-    "stride": [10, 10],
+    "window_size": [50, 50],
+    "stride": [20, 20],
     "object_detections": [],
     "object_detection_idx": -1,
 }
