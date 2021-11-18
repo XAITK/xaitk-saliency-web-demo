@@ -44,6 +44,9 @@ TASK_DEPENDENCY = {
         ],
         # Task => input
         "image_count": 1,
+        # Better defaults:
+        "n": 200,
+        "proximity_metric": "cosine",
     },
     "classification": {
         # Task => saliency
