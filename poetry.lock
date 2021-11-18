@@ -394,7 +394,7 @@ numpy = ">=1.13.3"
 
 [[package]]
 name = "pywebvue"
-version = "2.2.1"
+version = "2.3.4"
 description = "Python server creating interactive vue app over WebSocket"
 category = "main"
 optional = false
@@ -633,7 +633,7 @@ scipy = ["scipy"]
 
 [[package]]
 name = "trame"
-version = "1.3.6"
+version = "1.5.1"
 description = "Framework for building interactive Web applications quickly in plain Python"
 category = "main"
 optional = false
@@ -1251,8 +1251,8 @@ pywavelets = [
     {file = "PyWavelets-1.1.1.tar.gz", hash = "sha256:1a64b40f6acb4ffbaccce0545d7fc641744f95351f62e4c6aaa40549326008c9"},
 ]
 pywebvue = [
-    {file = "pywebvue-2.2.1-py3-none-any.whl", hash = "sha256:6b4ddcedd8806cb03953647fe085c47758b33dbd728c79acfb9aae5102b986e2"},
-    {file = "pywebvue-2.2.1.tar.gz", hash = "sha256:93033e0f092e9c149681101d0f9e3497301883aa8f88104211070ef8033f3caa"},
+    {file = "pywebvue-2.3.4-py3-none-any.whl", hash = "sha256:ec25f7fe697747eb70b2d2c63c4d0cee9419800e3869029e21fb104057f6882b"},
+    {file = "pywebvue-2.3.4.tar.gz", hash = "sha256:00f8df034085b49a17b6ffecde201cb5e7e74632eaacf9ad896bb55c38f55106"},
 ]
 regex = [
     {file = "regex-2021.10.8-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:094a905e87a4171508c2a0e10217795f83c636ccc05ddf86e7272c26e14056ae"},
@@ -1453,8 +1453,8 @@ torchvision = [
     {file = "torchvision-0.10.1-cp39-cp39-win_amd64.whl", hash = "sha256:6c8fe90213be4bce590ac9647b34db022d5d1ae94f309a733b9a64e65232173a"},
 ]
 trame = [
-    {file = "trame-1.3.6-py3-none-any.whl", hash = "sha256:36af0967ee9df2a80163d8f040a28c51b819fb88b9f7f3060885afc88875a88f"},
-    {file = "trame-1.3.6.tar.gz", hash = "sha256:e3f9811d1b80a3a4d0824aeb27fd49cee546ea34657acf7c377dc63e293ccc9f"},
+    {file = "trame-1.5.1-py3-none-any.whl", hash = "sha256:27cafbea37e0e779d4cedab5a2e3cce3ea038ca4e819ffc391e85eebdaac8c95"},
+    {file = "trame-1.5.1.tar.gz", hash = "sha256:24ce9f43c3ec6744d51638603f9aad0e0c91029a764e913264e6eca54c7e2f35"},
 ]
 typed-ast = [
     {file = "typed_ast-1.4.3-cp35-cp35m-manylinux1_i686.whl", hash = "sha256:2068531575a125b87a41802130fa7e29f26c09a2833fea68d9a40cf33902eba6"},

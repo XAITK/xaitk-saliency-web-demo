@@ -278,7 +278,17 @@ def xai_viz():
         ),
         "XAI visualization",
     ]
-    _content.children += ["Hello world"]
+    _content.children += [
+        vuetify.VCol([
+            vuetify.VSpacer(),
+        vuetify.VRow([
+        vuetify.VSpacer(),
+        vuetify.VProgressCircular(indeterminate=True, color="primary", size="300", width="15"),
+        vuetify.VSpacer(),
+        ]),
+        vuetify.VSpacer(),
+        ])
+    ]
 
     return _card
 
