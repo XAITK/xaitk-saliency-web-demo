@@ -1,13 +1,20 @@
 from trame import update_state
 from trame.layouts import SinglePage
-from trame.html import vuetify, vega
+from trame.html import vuetify, vega, xai
 from trame.html import Div
 
 import pandas as pd
 import altair as alt
 
 from .core import TASKS, run_model, run_saliency
-from .ui_helper import icon_button, card, object_detection, compact_styles, combo_styles
+from .ui_helper import (
+    icon_button,
+    card,
+    object_detection,
+    compact_styles,
+    combo_styles,
+    xai_classification,
+)
 
 # -----------------------------------------------------------------------------
 # File Input (Images)
@@ -73,14 +80,15 @@ def data_selection():
 # Model Execution
 # -----------------------------------------------------------------------------
 
+
 def model_execution():
     _card, _header, _content = card(classes="ma-4 flex-sm-grow-1")
-    _content.style = "min-height: 224px;"
+    _content.style = "min-height: 224px"
     _content.classes = "d-flex flex-shrink-1"
 
     # classes UI
     _chart = vega.VegaEmbed(
-        style="width: 100%", v_show="task_active === 'classification'"
+        style="width: calc(100% - 32px)", v_show="task_active === 'classification'"
     )
 
     # similarity UI
@@ -95,9 +103,9 @@ def model_execution():
 
     # object detection UI
     _detection = object_detection(
-        "task_active === 'detection'", # v-show
-        "object_detections",           # f-for
-        "object_detection_idx",        # selected rect idx
+        "task_active === 'detection'",  # v-show
+        "object_detections",  # f-for
+        "object_detection_idx",  # selected rect idx
     )
 
     _header.children += [
@@ -278,8 +286,7 @@ def xai_viz():
         ),
         "XAI visualization",
     ]
-    _content.children += [
-    ]
+    _content.children += [xai_classification()]
 
     return _card
 
@@ -355,6 +362,19 @@ def update_prediction(results={}):
     )
 
     model_chart.update(chart)
+    update_state(
+        "prediction_classes",
+        list(
+            map(
+                lambda t: {
+                    "text": t[1][0],
+                    "score": int(100 * t[1][1]),
+                    "value": f"heatmap_{t[0]}",
+                },
+                enumerate(classes),
+            )
+        ),
+    )
 
     # Similarity
     update_state("prediction_similarity", results.get("similarity", 0) * 100)
@@ -363,8 +383,13 @@ def update_prediction(results={}):
     update_state(
         "object_detections",
         [
-            {"class": v[0], "probability": int(v[1] * 100), "rect": list(v[2])}
-            for v in results.get("detection", [])
+            {
+                "id": i + 1,
+                "class": v[0],
+                "probability": int(v[1] * 100),
+                "area": [v[2][0], v[2][1], v[2][2] - v[2][0], v[2][3] - v[2][1]],
+            }
+            for i, v in enumerate(results.get("detection", []))
         ],
     )
 
@@ -380,6 +405,7 @@ layout.state = {
     "input_file": None,
     "window_size": [50, 50],
     "stride": [20, 20],
-    "object_detections": [],
-    "object_detection_idx": -1,
+    #
+    "xai_type": "",
+    "xai_class_classes": {},
 }

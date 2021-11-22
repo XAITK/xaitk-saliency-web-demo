@@ -192,9 +192,28 @@ def run_saliency():
     print("Exec saliency code for explanation")
     output = XAI.run_saliency()
     print("run_saliency")
-    for key, value in output.items():
-        if key != 'type':
-            print(f"{key}: {value.shape} | {value.dtype}")
+    update_state("xai_type", output.get("type"))
+
+    if output.get("type") == "classification":
+        (prediction_classes,) = get_state("prediction_classes")
+        _xai_saliency = output.get("saliency")
+        nb_classes = _xai_saliency.shape[0]
+
+        heat_maps = {}
+        class_names = {}
+        for i in range(nb_classes):
+            _key = f"heatmap_{i}"
+            heat_maps[_key] = _xai_saliency[i].ravel().tolist()
+            class_names[_key] = prediction_classes[i]
+
+        update_state("xai_class_heatmaps", heat_maps)
+        update_state("xai_class_classes", class_names)
+
+    else:
+        print(output.get("type"))
+        for key, value in output.items():
+            if key != "type":
+                print(f"{key}: {value.shape} | {value.dtype}")
 
 
 def initialize(task_active, **kwargs):
