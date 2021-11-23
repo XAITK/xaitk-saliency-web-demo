@@ -14,6 +14,7 @@ from .ui_helper import (
     compact_styles,
     combo_styles,
     xai_classification,
+    xai_similarity,
 )
 
 # -----------------------------------------------------------------------------
@@ -286,7 +287,10 @@ def xai_viz():
         ),
         "XAI visualization",
     ]
-    _content.children += [xai_classification()]
+    _content.children += [
+        xai_classification(),
+        xai_similarity(),
+    ]
 
     return _card
 
@@ -407,5 +411,4 @@ layout.state = {
     "stride": [20, 20],
     #
     "xai_type": "",
-    "xai_class_classes": {},
 }

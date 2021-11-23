@@ -200,15 +200,22 @@ def run_saliency():
         nb_classes = _xai_saliency.shape[0]
 
         heat_maps = {}
-        class_names = {}
         for i in range(nb_classes):
             _key = f"heatmap_{i}"
             heat_maps[_key] = _xai_saliency[i].ravel().tolist()
-            class_names[_key] = prediction_classes[i]
 
         update_state("xai_class_heatmaps", heat_maps)
-        update_state("xai_class_classes", class_names)
 
+    elif output.get("type") == "similarity":
+        _xai_saliency = output.get("saliency")
+        heat_maps = {
+            "heatmap_0": _xai_saliency.ravel().tolist(),
+        }
+        update_state("xai_similarity_heatmaps", heat_maps)
+    elif output.get("type") == "detection":
+        for key, value in output.items():
+            if key != "type":
+                print(f"{key}: {value.shape} | {value.dtype}")
     else:
         print(output.get("type"))
         for key, value in output.items():
