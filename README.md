@@ -13,3 +13,8 @@ To run the application locally just run the following command line and point you
 ```
 (poetry run) python -m xaitk_demo --port 8080 --host 0.0.0.0
 ```
+
+![xaitk-classification-rise](gallery/xaitk-classification-rise-4.jpg)
+![xaitk-classification-sliding-window](gallery/xaitk-classification-sliding-window.jpg)
+![xaitk-detection-retina](gallery/xaitk-detection-retina.jpg)
+![xaitk-similarity](gallery/xaitk-similarity-1.jpg)

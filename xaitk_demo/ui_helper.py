@@ -8,6 +8,7 @@ HEAT_MAP_MODES = [
     ("minSym", "mdi-arrow-collapse-horizontal"),
     ("negative", "mdi-ray-end-arrow"),
     ("positive", "mdi-ray-start-arrow"),
+    ("custom", "mdi-account"),
 ]
 
 compact_styles = {
@@ -340,6 +341,22 @@ def xai_viz():
         )
         _header.add_child("XAI")
         vuetify.VSpacer()
+        vuetify.VTextField(
+            label="Min",
+            v_model=("heatmap_color_min", -1),
+            **compact_styles,
+            style="max-width: 75px",
+            classes="mx-1",
+            disabled=("xai_saliency_mode !== 'custom'",),
+        )
+        vuetify.VTextField(
+            label="Max",
+            v_model=("heatmap_color_max", 1),
+            **compact_styles,
+            style="max-width: 75px",
+            classes="mx-1",
+            disabled=("xai_saliency_mode !== 'custom'",),
+        )
         vuetify.VSlider(
             v_model=("xai_saliency_opacity", 0.5),
             min=0,
@@ -388,9 +405,10 @@ def xai_classification():
             heatmaps=("xai_class_heatmaps", {}),
             heatmap_opacity=("xai_saliency_opacity",),
             heatmap_color_preset="rainbow",
-            heatmap_color_range=("xai_class_color_range", [-1, 1]),
+            heatmap_color_range=("xai_color_range", [-1, 1]),
             heatmap_active=("xai_class_active", "heatmap_0"),
             heatmap_color_mode=("xai_saliency_mode",),
+            color_range="[heatmap_color_min, heatmap_color_max] = $event",
         )
 
     return container
@@ -407,9 +425,10 @@ def xai_similarity():
             heatmaps=("xai_similarity_heatmaps", {}),
             heatmap_opacity=("xai_saliency_opacity",),
             heatmap_color_preset="rainbow",
-            heatmap_color_range=("xai_similarity_color_range", [-1, 1]),
+            heatmap_color_range=("xai_color_range", [-1, 1]),
             heatmap_active="heatmap_0",
             heatmap_color_mode=("xai_saliency_mode",),
+            color_range="[heatmap_color_min, heatmap_color_max] = $event",
         )
 
     return container
@@ -433,9 +452,10 @@ def xai_detection():
             heatmaps=("xai_detection_heatmaps", {}),
             heatmap_opacity=("xai_saliency_opacity",),
             heatmap_color_preset="rainbow",
-            heatmap_color_range=("xai_detection_color_range", [-1, 1]),
+            heatmap_color_range=("xai_color_range", [-1, 1]),
             heatmap_active=("xai_detection_active", "heatmap_0"),
             heatmap_color_mode=("xai_saliency_mode",),
+            color_range="[heatmap_color_min, heatmap_color_max] = $event",
         )
 
     return container

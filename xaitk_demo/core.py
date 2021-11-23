@@ -245,3 +245,13 @@ def initialize(task_active, **kwargs):
 
 def reset_xai_viz():
     update_state("xai_type", None)
+
+
+@change("heatmap_color_min", "heatmap_color_max")
+def heatmap_color_min_change(heatmap_color_min, heatmap_color_max, **kwargs):
+    try:
+        update_state(
+            "xai_color_range", [float(heatmap_color_min), float(heatmap_color_max)]
+        )
+    except:
+        pass
