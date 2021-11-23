@@ -101,6 +101,7 @@ def task_change(task_active, **kwargs):
     update_state("image_url_1", None)
     update_state("image_url_2", None)
     update_state("predict_url", None)
+    reset_xai_viz()
 
     print("Use task", task_active)
     XAI.set_task(task_active)
@@ -111,6 +112,7 @@ def model_change(model_active, **kwargs):
     """ML model is changing"""
     print("Use model", model_active)
     XAI.set_model(model_active)
+    reset_xai_viz()
 
 
 @change("saliency_active")
@@ -128,6 +130,7 @@ def saliency_change(saliency_active, **kwargs):
             params[name] = convert(value)
 
     XAI.set_saliency_method(saliency_active, params)
+    reset_xai_viz()
 
 
 @change("input_file")
@@ -148,6 +151,8 @@ def process_file(input_file, image_url_1, image_url_2, image_count, **kwargs):
         XAI.set_image_2(input_file.get("content"))
         run_model()
 
+    reset_xai_viz()
+
 
 @change("image_url_1", "image_url_2")
 def reset_image(image_url_1, image_url_2, image_count, **kwargs):
@@ -160,6 +165,7 @@ def reset_image(image_url_1, image_url_2, image_count, **kwargs):
 
     # Hide button if we have all the inputs we need
     update_state("need_input", count < image_count)
+    reset_xai_viz()
 
 
 @change(*list(ALL_SALIENCY_PARAMS.keys()))
@@ -177,6 +183,7 @@ def saliency_param_update(**kwargs):
     XAI.update_saliency_params(**params)
     (saliency_active,) = get_state("saliency_active")
     saliency_change(saliency_active, **params)
+    reset_xai_viz()
 
 
 def run_model():
@@ -195,10 +202,8 @@ def run_saliency():
     update_state("xai_type", output.get("type"))
 
     if output.get("type") == "classification":
-        (prediction_classes,) = get_state("prediction_classes")
         _xai_saliency = output.get("saliency")
         nb_classes = _xai_saliency.shape[0]
-
         heat_maps = {}
         for i in range(nb_classes):
             _key = f"heatmap_{i}"
@@ -213,9 +218,15 @@ def run_saliency():
         }
         update_state("xai_similarity_heatmaps", heat_maps)
     elif output.get("type") == "detection":
-        for key, value in output.items():
-            if key != "type":
-                print(f"{key}: {value.shape} | {value.dtype}")
+        _xai_saliency = output.get("saliency")
+        nb_classes = _xai_saliency.shape[0]
+        heat_maps = {}
+        for i in range(nb_classes):
+            _key = f"heatmap_{i}"
+            heat_maps[_key] = _xai_saliency[i].ravel().tolist()
+
+        update_state("xai_detection_heatmaps", heat_maps)
+
     else:
         print(output.get("type"))
         for key, value in output.items():
@@ -229,3 +240,8 @@ def initialize(task_active, **kwargs):
     (model_active,) = get_state("model_active")
     model_change(model_active)
     saliency_param_update(**kwargs)
+    reset_xai_viz()
+
+
+def reset_xai_viz():
+    update_state("xai_type", None)
