@@ -113,7 +113,7 @@ def update_prediction(results={}):
         "object_detections",
         [
             {
-                "value": f"heatmap_{i + 1}",
+                "value": f"heatmap_{i}",
                 "text": f"{v[0]} - {int(v[1] * 100)}",
                 "id": i + 1,
                 "class": v[0],

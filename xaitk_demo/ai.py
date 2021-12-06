@@ -195,8 +195,9 @@ class ClfModel(ClassifyImage):
     def classify_images(self, image_iter):
         for img in image_iter:
             inp = imagenet_model_loader(img).unsqueeze(0)
-            out = self.model(inp)[0, self.idx].detach().numpy()
-            yield dict(zip(self.get_labels(), out))
+            vec = self.model(inp).cpu().numpy().squeeze()
+            out = softmax(vec)
+            yield dict(zip(self.get_labels(), out[self.idx]))
 
     def get_config(self):
         # Required by a parent class.

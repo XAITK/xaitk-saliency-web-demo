@@ -286,7 +286,7 @@ def xai_parameters():
         vuetify.VSelect(
             label="Proximity Metric",
             v_show="saliency_parameters.includes('proximity_metric')",
-            v_model=("proximity_metric", "braycurtis"),
+            v_model=("proximity_metric", "cosine"),
             items=(
                 "similarity_metric_items",
                 [
