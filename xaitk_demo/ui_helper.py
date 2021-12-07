@@ -1,6 +1,6 @@
 from trame.html import Div, Form, Input, vuetify, vega, xai
 
-from .core import run_model, run_saliency
+from xaitk_demo.core import run_model, run_saliency
 
 HEAT_MAP_MODES = [
     ("full", "mdi-arrow-left-right"),

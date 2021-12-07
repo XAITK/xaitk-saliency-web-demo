@@ -1,4 +1,5 @@
 import io
+import os
 import numpy as np
 from PIL import Image
 from scipy.special import softmax
@@ -79,7 +80,9 @@ coco_model_loader = transforms.Compose(
 )
 
 # Class labels associated with the ImageNet dataset
-with open("data/imagenet_classes.txt") as f:
+module_dir = os.path.abspath(os.path.dirname(__file__))
+print(module_dir)
+with open(os.path.join(module_dir, "imagenet_classes.txt")) as f:
     imagenet_categories = f.read().splitlines()
 
 # Class labels associated with the COCO dataset
