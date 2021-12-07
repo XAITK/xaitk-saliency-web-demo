@@ -1,6 +1,6 @@
 import base64
 from trame import change, get_state, update_state
-from .ai import XaiController
+from xaitk_demo.ai import XaiController
 
 # -----------------------------------------------------------------------------
 # Application logic

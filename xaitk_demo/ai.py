@@ -1,4 +1,5 @@
 import io
+import os
 import numpy as np
 from PIL import Image
 from scipy.special import softmax
@@ -79,7 +80,9 @@ coco_model_loader = transforms.Compose(
 )
 
 # Class labels associated with the ImageNet dataset
-with open("data/imagenet_classes.txt") as f:
+module_dir = os.path.abspath(os.path.dirname(__file__))
+print(module_dir)
+with open(os.path.join(module_dir, "imagenet_classes.txt")) as f:
     imagenet_categories = f.read().splitlines()
 
 # Class labels associated with the COCO dataset
@@ -195,8 +198,9 @@ class ClfModel(ClassifyImage):
     def classify_images(self, image_iter):
         for img in image_iter:
             inp = imagenet_model_loader(img).unsqueeze(0)
-            out = self.model(inp)[0, self.idx].detach().numpy()
-            yield dict(zip(self.get_labels(), out))
+            vec = self.model(inp).cpu().numpy().squeeze()
+            out = softmax(vec)
+            yield dict(zip(self.get_labels(), out[self.idx]))
 
     def get_config(self):
         # Required by a parent class.

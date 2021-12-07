@@ -5,9 +5,9 @@ from trame.html import vuetify
 import pandas as pd
 import altair as alt
 
-from .core import TASKS
+from xaitk_demo.core import TASKS
 
-from .ui_helper import (
+from xaitk_demo.ui_helper import (
     model_execution,
     data_selection,
     xai_parameters,
@@ -113,7 +113,7 @@ def update_prediction(results={}):
         "object_detections",
         [
             {
-                "value": f"heatmap_{i + 1}",
+                "value": f"heatmap_{i}",
                 "text": f"{v[0]} - {int(v[1] * 100)}",
                 "id": i + 1,
                 "class": v[0],

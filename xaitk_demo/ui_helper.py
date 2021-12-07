@@ -1,6 +1,6 @@
 from trame.html import Div, Form, Input, vuetify, vega, xai
 
-from .core import run_model, run_saliency
+from xaitk_demo.core import run_model, run_saliency
 
 HEAT_MAP_MODES = [
     ("full", "mdi-arrow-left-right"),
@@ -286,7 +286,7 @@ def xai_parameters():
         vuetify.VSelect(
             label="Proximity Metric",
             v_show="saliency_parameters.includes('proximity_metric')",
-            v_model=("proximity_metric", "braycurtis"),
+            v_model=("proximity_metric", "cosine"),
             items=(
                 "similarity_metric_items",
                 [
