@@ -1,5 +1,3 @@
-from trame import start
-from xaitk_demo.core import initialize
-from xaitk_demo.ui import layout
+from xaitk_demo import main
 
-start(layout, on_ready=initialize)
+main()

@@ -44,3 +44,4 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 black = "black:main"
+xaitk_demo = "xaitk_demo:main"
