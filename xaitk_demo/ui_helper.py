@@ -1,6 +1,5 @@
 from trame.html import Div, Form, Input, vuetify, vega, xai
-
-from xaitk_demo.core import run_model, run_saliency
+from trame import controller as ctrl
 
 HEAT_MAP_MODES = [
     ("full", "mdi-arrow-left-right"),
@@ -168,7 +167,7 @@ def model_execution():
             small=True,
             disabled=["need_input"],
             classes="mr-2",
-            click=run_model,
+            click=ctrl.run_model,
         )
         _header.add_child("Model execution")
 
@@ -337,7 +336,7 @@ def xai_viz():
             "mdi-run-fast",
             small=True,
             classes="mr-2",
-            click=run_saliency,
+            click=ctrl.run_saliency,
         )
         _header.add_child("XAI")
         vuetify.VSpacer()
@@ -440,7 +439,7 @@ def xai_detection():
         vuetify.VSelect(
             v_model="xai_detection_active",
             items=("object_detections", []),
-            change="object_detection_idx = [xai_detection_active.split('_')[1]]",
+            change="object_detection_idx = [1 + Number(xai_detection_active.split('_')[1])]",
             **compact_styles,
             classes="mb-2",
         )

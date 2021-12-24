@@ -1,4 +1,4 @@
-from trame import update_state
+from trame import state, controller as ctrl
 from trame.layouts import SinglePage
 from trame.html import vuetify
 
@@ -91,42 +91,39 @@ def update_prediction(results={}):
     )
 
     model_chart.update(chart)
-    update_state(
-        "prediction_classes",
-        list(
-            map(
-                lambda t: {
-                    "text": t[1][0],
-                    "score": int(100 * t[1][1]),
-                    "value": f"heatmap_{t[0]}",
-                },
-                enumerate(classes),
-            )
-        ),
+    state.prediction_classes = list(
+        map(
+            lambda t: {
+                "text": t[1][0],
+                "score": int(100 * t[1][1]),
+                "value": f"heatmap_{t[0]}",
+            },
+            enumerate(classes),
+        )
     )
 
     # Similarity
-    update_state("prediction_similarity", results.get("similarity", 0) * 100)
+    state.prediction_similarity = results.get("similarity", 0) * 100
 
     # Detection
-    update_state(
-        "object_detections",
-        [
-            {
-                "value": f"heatmap_{i}",
-                "text": f"{v[0]} - {int(v[1] * 100)}",
-                "id": i + 1,
-                "class": v[0],
-                "probability": int(v[1] * 100),
-                "area": [v[2][0], v[2][1], v[2][2] - v[2][0], v[2][3] - v[2][1]],
-            }
-            for i, v in enumerate(results.get("detection", []))
-        ],
-    )
+    state.object_detections = [
+        {
+            "value": f"heatmap_{i}",
+            "text": f"{v[0]} - {int(v[1] * 100)}",
+            "id": i + 1,
+            "class": v[0],
+            "probability": int(v[1] * 100),
+            "area": [v[2][0], v[2][1], v[2][2] - v[2][0], v[2][3] - v[2][1]],
+        }
+        for i, v in enumerate(results.get("detection", []))
+    ]
 
 
 # Reset UI
 update_prediction()
+
+# Expose method to trame controller
+ctrl.update_prediction = update_prediction
 
 # -----------------------------------------------------------------------------
 # Undefined but required state variables
