@@ -14,7 +14,7 @@ Restart your terminal to have conda available.
 ```bash
 conda create --name xai python=3.9
 conda activate xai
-conda install -c pytorch pytorch==1.9.1 torchvision==0.10.0
+conda install -c pytorch "pytorch==1.9.1" "torchvision==0.10.0"
 pip install -r ./mac-m1-requirements.txt
 ```
 
