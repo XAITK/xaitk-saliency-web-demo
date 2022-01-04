@@ -20,7 +20,7 @@ from xaitk_demo.ui_helper import (
 # Main page layout
 # -----------------------------------------------------------------------------
 
-layout = SinglePage("xaiTK")
+layout = SinglePage("xaiTK", on_ready=ctrl.on_layout_ready)
 layout.logo.children = [vuetify.VIcon("mdi-brain")]
 layout.title.set_text("XaiTK")
 
@@ -121,9 +121,6 @@ def update_prediction(results={}):
 
 # Reset UI
 update_prediction()
-
-# Expose method to trame controller
-ctrl.update_prediction = update_prediction
 
 # -----------------------------------------------------------------------------
 # Undefined but required state variables

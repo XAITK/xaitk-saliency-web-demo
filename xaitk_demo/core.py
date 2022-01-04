@@ -249,8 +249,3 @@ def heatmap_color_min_change(heatmap_color_min, heatmap_color_max, **kwargs):
         state.xai_color_range = [float(heatmap_color_min), float(heatmap_color_max)]
     except:
         pass
-
-
-# Expose method to trame controller
-ctrl.run_model = run_model
-ctrl.run_saliency = run_saliency
