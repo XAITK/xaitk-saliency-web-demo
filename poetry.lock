@@ -483,7 +483,7 @@ optional = false
 python-versions = "*"
 
 [package.dependencies]
-wslink = ">=1.0.7"
+wslink = ">=1.2.0"
 
 [[package]]
 name = "regex"
@@ -770,7 +770,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
 name = "wslink"
-version = "1.3.0"
+version = "1.3.1"
 description = "Python/JavaScript library for communicating over WebSocket"
 category = "main"
 optional = false
@@ -827,7 +827,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<3.10"
-content-hash = "1821daca168272b8172ac8f4baab4e6e5479d41f4b612e2e028bccd701ebb8c4"
+content-hash = "b9a74485cab1f020f11185ab70ce86aa9912a4cbfd67644ff6e40af2b5f6fa21"
 
 [metadata.files]
 aiohttp = [
@@ -1483,8 +1483,8 @@ pywavelets = [
     {file = "PyWavelets-1.2.0.tar.gz", hash = "sha256:6cbd69b047bb4e00873097472133425f5f08a4e6bc8b3f0ae709274d4d5e9a8d"},
 ]
 pywebvue = [
-    {file = "pywebvue-2.5.0-py3-none-any.whl", hash = "sha256:a720412e37a66f05f2afdaf890f5be3a4efac1cd2b52c5adfad0b5f62583a0af"},
-    {file = "pywebvue-2.5.0.tar.gz", hash = "sha256:739d8f60175453b8438fe2c66d61ea6aac4b3accd9dbb9ce68c1042fc641983e"},
+    {file = "pywebvue-2.5.4-py3-none-any.whl", hash = "sha256:cc90095fcee1dcd6ea3a1cc3e22a08167c69f4189bb3c5ec40835a3b808f8ae9"},
+    {file = "pywebvue-2.5.4.tar.gz", hash = "sha256:30eb6294058f98f4f7c4202b8e512599fcf85ea21ac370d177e0bd589527b530"},
 ]
 regex = [
     {file = "regex-2021.11.10-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:9345b6f7ee578bad8e475129ed40123d265464c4cfead6c261fd60fc9de00bcf"},
@@ -1726,8 +1726,8 @@ torchvision = [
     {file = "torchvision-0.10.1-cp39-cp39-win_amd64.whl", hash = "sha256:6c8fe90213be4bce590ac9647b34db022d5d1ae94f309a733b9a64e65232173a"},
 ]
 trame = [
-    {file = "trame-1.6.0-py3-none-any.whl", hash = "sha256:5cd024463f90d85e7e88269782a533049d68fb40e85cbf78423857e9a93a8171"},
-    {file = "trame-1.6.0.tar.gz", hash = "sha256:a6bc68ff45c8d366ffee5991e038096011b000b9194f34a8c0f294cf8a33c873"},
+    {file = "trame-1.10.4-py3-none-any.whl", hash = "sha256:cf6d8dc6c93d24c8f7021224e544dce5893f34fc9688ffe14e1fcc485e9b8400"},
+    {file = "trame-1.10.4.tar.gz", hash = "sha256:c421b2c427d3b29ae2a15fb1845d2d8b556d775e9a7134750cfc11092aa66904"},
 ]
 typed-ast = [
     {file = "typed_ast-1.5.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:7b310a207ee9fde3f46ba327989e6cba4195bc0c8c70a158456e7b10233e6bed"},
@@ -1759,8 +1759,8 @@ urllib3 = [
     {file = "urllib3-1.26.7.tar.gz", hash = "sha256:4987c65554f7a2dbf30c18fd48778ef124af6fab771a377103da0585e2336ece"},
 ]
 wslink = [
-    {file = "wslink-1.2.0-py3-none-any.whl", hash = "sha256:2fd9968e2ad0f364bbfef7aa2de51060299fb9ecf83e23165a388954a04fa66a"},
-    {file = "wslink-1.2.0.tar.gz", hash = "sha256:9bdad6e8db685fadabc230a4731743beaf43b964d80d3cc06b052cad1b1a9938"},
+    {file = "wslink-1.3.1-py3-none-any.whl", hash = "sha256:8dd628617f3d42a95c1ca575ff28921cf1047b38b5a618b031389b7aa67d71ed"},
+    {file = "wslink-1.3.1.tar.gz", hash = "sha256:4e29fff7bf47b477d1679dc200cc53cec9e5e71a0a61d33fe40bc7d472e2ba2d"},
 ]
 xaitk-saliency = [
     {file = "xaitk_saliency-0.4.0-py3-none-any.whl", hash = "sha256:d2730c87d9457abd3e7d2221caa46acb97e117bc9d28e9bf7214f0c8c3453b90"},
