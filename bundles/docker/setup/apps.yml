@@ -1,0 +1,4 @@
+PyWebVue: # Default app under /index.html
+  app: xaitk-saliency-demo
+xaitk-saliency-demo: # /xaitk-saliency-demo.html
+  app: xaitk-saliency-demo
