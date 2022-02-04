@@ -47,6 +47,14 @@ with layout.toolbar:
         **ui_helper.compact_styles,
         **ui_helper.combo_styles,
     )
+    vuetify.VSelect(
+        v_show=("task_active == 'classification'",),
+        label="Top classes",
+        v_model=("TOP_K", 5),
+        items=("class_numbers", list(range(5, 11))),
+        **ui_helper.compact_styles,
+        style="max-width: 70px",
+    )
     vuetify.VProgressLinear(
         indeterminate=True,
         absolute=True,

@@ -1,8 +1,3 @@
-# -----------------------------------------------------------------------------
-# Application logic
-# Task > Model > Saliency
-# -----------------------------------------------------------------------------
-
 TASKS = [
     {"text": "Image Similarity", "value": "similarity"},
     {"text": "Object Detection", "value": "detection"},

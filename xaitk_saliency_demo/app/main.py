@@ -1,10 +1,7 @@
-from trame import setup_dev
-
 from . import controller, ui
 
 
 def start_server():
-    setup_dev(ui, controller)
     ui.layout.start()
 
 

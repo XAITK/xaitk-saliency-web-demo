@@ -6,11 +6,11 @@ TASK_DEPENDENCY = {
             {"text": "Default", "value": "similarity-saliency"},
         ],
         # Task => model
-        "model_active": "resnet-50",
+        "model_active": "SimilarityResNet50",
         "model_available": [
-            {"text": "ResNet-50", "value": "resnet-50"},
-            {"text": "AlexNet", "value": "alexnet"},
-            {"text": "VGG-16", "value": "vgg-16"},
+            {"text": "ResNet-50", "value": "SimilarityResNet50"},
+            {"text": "AlexNet", "value": "SimilarityAlexNet"},
+            {"text": "VGG-16", "value": "SimilarityVgg16"},
         ],
         # Task => input
         "image_count": 2,
@@ -22,10 +22,10 @@ TASK_DEPENDENCY = {
             {"text": "Default", "value": "detection-saliency"},
         ],
         # Task => model
-        "model_active": "faster-rcnn",
+        "model_active": "DetectionFasterRCNN",
         "model_available": [
-            {"text": "Faster R-CNN", "value": "faster-rcnn"},
-            {"text": "RetinaNet", "value": "retina-net"},
+            {"text": "Faster R-CNN", "value": "DetectionFasterRCNN"},
+            {"text": "RetinaNet", "value": "DetectionRetinaNet"},
         ],
         # Task => input
         "image_count": 1,
@@ -41,11 +41,11 @@ TASK_DEPENDENCY = {
             {"text": "Sliding Window Stack", "value": "SlidingWindowStack"},
         ],
         # Task => model
-        "model_active": "resnet-50",
+        "model_active": "ClassificationResNet50",
         "model_available": [
-            {"text": "ResNet-50", "value": "resnet-50"},
-            {"text": "AlexNet", "value": "alexnet"},
-            {"text": "VGG-16", "value": "vgg-16"},
+            {"text": "ResNet-50", "value": "ClassificationResNet50"},
+            {"text": "AlexNet", "value": "ClassificationAlexNet"},
+            {"text": "VGG-16", "value": "ClassificationVgg16"},
         ],
         # Task => input
         "image_count": 1,

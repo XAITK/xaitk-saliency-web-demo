@@ -1,10 +1,10 @@
 import base64
 
 from trame import state
-from . import options, ai, exec
+from . import main, options, trame_exec
 
 # Singleton
-AI = ai.XaiController()
+AI = main.XaiController()
 
 # -----------------------------------------------------------------------------
 # State update helpers
@@ -15,11 +15,19 @@ def reset_xai_execution():
     state.xai_type = None
 
 
+def reset_model_execution():
+    state.classification_model_execution_chart = {}
+    state.prediction_classes = []
+    state.prediction_similarity = 0
+    state.object_detections = []
+
+
 def reset_all():
     state.need_input = True
     state.image_url_1 = None
     state.image_url_2 = None
     state.predict_url = None
+    reset_model_execution()
     reset_xai_execution()
 
 
@@ -45,14 +53,21 @@ def on_task_change(task_active, **kwargs):
 def on_model_change(model_active, **kwargs):
     print("set model to", model_active)
     AI.set_model(model_active)
+    reset_model_execution()
     reset_xai_execution()
+    trame_exec.update_model_execution()
+
+
+@state.change("TOP_K")
+def on_nb_class_change(**kwargs):
+    trame_exec.update_model_execution()
 
 
 @state.change("saliency_active")
 def on_xai_algo_change(saliency_active, **kwargs):
     # Show/hide parameters relevant to current algo
     state.saliency_parameters = options.SALIENCY_PARAMS[saliency_active]
-    exec.update_active_xai_algorithm()
+    trame_exec.update_active_xai_algorithm()
     reset_xai_execution()
 
 
@@ -62,19 +77,20 @@ def on_input_file_change(input_file, image_url_1, image_url_2, image_count, **kw
     if not input_file:
         return
 
+    reset_model_execution()
+    reset_xai_execution()
+
     # Make file available as image on HTML side
     _url = f"data:{input_file.get('type')};base64,{base64.encodebytes(input_file.get('content')).decode('utf-8')}"
     if not image_url_1 or image_count == 1:
         state.image_url_1 = _url
         AI.set_image_1(input_file.get("content"))
         if image_count == 1:
-            exec.update_model_execution()
+            trame_exec.update_model_execution()
     elif not image_url_2 and image_count == 2:
         state.image_url_2 = _url
         AI.set_image_2(input_file.get("content"))
-        exec.update_model_execution()
-
-    reset_xai_execution()
+        trame_exec.update_model_execution()
 
 
 @state.change("image_url_1", "image_url_2")
@@ -93,5 +109,5 @@ def reset_image(image_url_1, image_url_2, image_count, **kwargs):
 
 @state.change(*list(options.ALL_SALIENCY_PARAMS.keys()))
 def on_saliency_param_update(**kwargs):
-    exec.update_active_xai_algorithm()
+    trame_exec.update_active_xai_algorithm()
     reset_xai_execution()

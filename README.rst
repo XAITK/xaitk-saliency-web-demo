@@ -5,6 +5,7 @@ XAITK Saliency Demo
 Web application demonstrating XAITK Saliency functionality
 
 * Free software: BSD License
+* Created using template from `trame-cookiecutter <https://github.com/Kitware/trame-cookiecutter>`_
 
 
 Installing

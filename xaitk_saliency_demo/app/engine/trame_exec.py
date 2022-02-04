@@ -2,15 +2,25 @@ import pandas as pd
 import altair as alt
 
 from trame import state, controller as ctrl
-from . import options, ai
+from . import main, options, trame_state
 
 # Singleton
-AI = ai.XaiController()
+AI = main.XaiController()
 
-# -----------------------------------------------------------------------------
+
+def initialize(task_active, **kwargs):
+    """Executed only once when application start"""
+    # State listener not yet running... Hence manual setup...
+    trame_state.on_task_change(task_active)
+    trame_state.on_model_change(state.model_active)
+    trame_state.on_xai_algo_change(state.saliency_active)
+    trame_state.reset_xai_execution()
 
 
 def update_active_xai_algorithm():
+    """Executed when:
+    -> state.change(saliency_active, *xai_params)
+    """
     params = {}
     for name in options.SALIENCY_PARAMS[state.saliency_active]:
         value = state[name]
@@ -23,10 +33,11 @@ def update_active_xai_algorithm():
     AI.set_saliency_method(state.saliency_active, params)
 
 
-# -----------------------------------------------------------------------------
-
-
 def update_model_execution():
+    """Executed when:
+    -> btn press in model section
+    -> state.change(TOP_K, input_file, model_active)
+    """
     results = {}
 
     if AI.can_run():
@@ -38,7 +49,10 @@ def update_model_execution():
     chart = (
         alt.Chart(df)
         .mark_bar()
-        .encode(x="Score", y="Class")
+        .encode(
+            x=alt.X("Score", axis=alt.Axis(format="%", title="percentage")),
+            y=alt.Y("Class", sort="-x"),
+        )
         .properties(width="container", height=145)
     )
 
@@ -71,11 +85,10 @@ def update_model_execution():
     ]
 
 
-# -----------------------------------------------------------------------------
-
-
 def update_xai_execution():
-    """Method called when click saliency button"""
+    """Executed when:
+    -> btn press in xai section
+    """
     output = AI.run_saliency()
     print("run_saliency...")
     state.xai_type = output.get("type")

@@ -145,7 +145,9 @@ def create_section_model_execution():
     with _content:
         # classes UI
         _chart = vega.VegaEmbed(
-            style="width: calc(100% - 32px)", v_show="task_active === 'classification'"
+            name="classification_model_execution_chart",
+            style="width: calc(100% - 32px)",
+            v_show="task_active === 'classification'",
         )
         ctrl.classification_chart_update = _chart.update
 
@@ -215,14 +217,14 @@ def create_section_xai_parameters():
                 v_model="window_size[0]",
                 type="number",
                 classes="mx-2",
-                change="dirty('window_size')",
+                change="flushState('window_size')",
             )
             vuetify.VTextField(
                 label="Window Size (Width)",
                 v_model="window_size[1]",
                 type="number",
                 classes="mx-2",
-                change="dirty('window_size')",
+                change="flushState('window_size')",
             )
 
         with vuetify.VRow(v_show="saliency_parameters.includes('stride')"):
@@ -231,14 +233,14 @@ def create_section_xai_parameters():
                 v_model="stride[0]",
                 type="number",
                 classes="mx-2",
-                change="dirty('stride')",
+                change="flushState('stride')",
             )
             vuetify.VTextField(
                 label="Stride Size (Width step)",
                 v_model="stride[1]",
                 type="number",
                 classes="mx-2",
-                change="dirty('stride')",
+                change="flushState('stride')",
             )
         vuetify.VTextField(
             label="Number of random masks used in the algorithm",
