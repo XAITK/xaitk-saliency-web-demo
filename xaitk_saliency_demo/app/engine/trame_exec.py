@@ -16,11 +16,6 @@ def initialize(task_active, **kwargs):
     trame_state.on_xai_algo_change(state.saliency_active)
     trame_state.reset_xai_execution()
 
-    import json
-    from .. import ui
-
-    print(json.dumps(ui.layout.state, indent=2))
-
 
 def update_active_xai_algorithm():
     """Executed when:
