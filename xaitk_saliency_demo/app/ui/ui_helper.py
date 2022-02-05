@@ -72,14 +72,14 @@ def create_section_input():
         create_btn_icon(
             "mdi-image-plus",
             small=True,
-            v_show=("need_input", True),
+            v_show=("input_needed", True),
             click="input_file=null; $refs.file_form.reset(); $refs.input_file.click()",
         )
 
     with _content:
         with vuetify.VRow():
-            create_input_image("image_url_1")
-            create_input_image("image_url_2")
+            create_input_image("input_1")
+            create_input_image("input_2")
         with Form(ref="file_form", classes="d-none"):
             Input(
                 ref="input_file",
@@ -90,12 +90,15 @@ def create_section_input():
     return _card
 
 
-def create_input_image(data_url, **kwargs):
-    _container = Div(style="position: relative;", v_show=data_url)
+def create_input_image(input, **kwargs):
+    _img_url = f"{input}_img_url"
+    _name = f"{input}_name"
+    _container = Div(style="position: relative;", v_show=(_img_url,))
+
     with _container:
         vuetify.VImg(
             aspect_ratio=1,
-            src=(data_url, None),
+            src=(_img_url, None),
             classes="elevation-2 ma-2",
             max_height="200px",
             max_width="200px",
@@ -109,13 +112,13 @@ def create_input_image(data_url, **kwargs):
             style="top: -2px; right: -2px; background: white;",
             outlined=True,
             x_small=True,
-            click=f"{data_url} = null",
+            click=f"{_img_url} = null",
             **kwargs,
         )
         Div(
-            f"{{{{ {data_url}_name }}}}",
+            f"{{{{ {_name} }}}}",
             classes="text-center text-caption",
-            v_show="task_active == 'similarity'",
+            v_show=("task_active == 'similarity'",),
         )
 
     return _container
@@ -136,7 +139,7 @@ def create_section_model_execution():
         create_btn_icon(
             "mdi-run-fast",
             small=True,
-            disabled=["need_input"],
+            disabled=("input_needed",),
             classes="mr-2",
             click=ctrl.run_model,
         )
@@ -145,29 +148,29 @@ def create_section_model_execution():
     with _content:
         # classes UI
         _chart = vega.VegaEmbed(
-            name="classification_model_execution_chart",
+            name="model_viz_classification_chart",
             style="width: calc(100% - 32px)",
-            v_show="task_active === 'classification'",
+            v_show=("task_active === 'classification'",),
         )
         ctrl.classification_chart_update = _chart.update
 
         # similarity UI
         vuetify.VProgressCircular(
-            "{{ Math.round(prediction_similarity) }} %",
-            v_show="task_active === 'similarity'",
+            "{{ Math.round(model_viz_similarity) }} %",
+            v_show=("task_active === 'similarity'",),
             size=192,
             width=15,
             color="teal",
-            value=("prediction_similarity", 0),
+            value=("model_viz_similarity", 0),
         )
 
         # object detection UI
-        with vuetify.VRow(v_show="task_active === 'detection'", align="center"):
+        with vuetify.VRow(v_show=("task_active === 'detection'",), align="center"):
             xai.XaiImage(
                 classes="ma-2",
-                src=("image_url_1",),
-                areas=("object_detections", []),
-                area_selected=("object_detection_idx", []),
+                src=("input_1_img_url",),
+                areas=("model_viz_detection_areas", []),
+                area_selected=("model_viz_detection_area_actives", []),
                 area_opacity=0.25,
                 area_selected_opacity=1,
                 area_key="id",
@@ -179,7 +182,7 @@ def create_section_model_execution():
                 style="width: 25px;",
             ):
                 with vuetify.VSheet(
-                    v_for="item, idx in object_detections",
+                    v_for=("item, idx in model_viz_detection_areas",),
                     key="idx",
                     classes="ma-2",
                     style="cursor: pointer",
@@ -187,8 +190,8 @@ def create_section_model_execution():
                     width=125,
                     height=40,
                     rounded=True,
-                    mouseenter="object_detection_idx = [idx + 1]",
-                    mouseleave="object_detection_idx = []",
+                    mouseenter="model_viz_detection_area_actives = [idx + 1]",
+                    mouseleave="model_viz_detection_area_actives = []",
                 ):
                     with vuetify.VContainer(classes="fill-height"):
                         with vuetify.VRow(
@@ -211,55 +214,55 @@ def create_section_xai_parameters():
     )
     _header.add_child("XAI parameters")
     with _content:
-        with vuetify.VRow(v_show="saliency_parameters.includes('window_size')"):
+        with vuetify.VRow(v_show=("xai_params_to_show.includes('window_size')",)):
             vuetify.VTextField(
                 label="Window Size (Height)",
-                v_model="window_size[0]",
+                v_model=("xai_param__window_size[0]",),
                 type="number",
                 classes="mx-2",
-                change="flushState('window_size')",
+                change="flushState('xai_param__window_size')",
             )
             vuetify.VTextField(
                 label="Window Size (Width)",
-                v_model="window_size[1]",
+                v_model=("xai_param__window_size[1]",),
                 type="number",
                 classes="mx-2",
-                change="flushState('window_size')",
+                change="flushState('xai_param__window_size')",
             )
 
-        with vuetify.VRow(v_show="saliency_parameters.includes('stride')"):
+        with vuetify.VRow(v_show=("xai_params_to_show.includes('stride')",)):
             vuetify.VTextField(
                 label="Stride Size (Height step)",
-                v_model="stride[0]",
+                v_model=("xai_param__stride[0]",),
                 type="number",
                 classes="mx-2",
-                change="flushState('stride')",
+                change="flushState('xai_param__stride')",
             )
             vuetify.VTextField(
                 label="Stride Size (Width step)",
-                v_model="stride[1]",
+                v_model=("xai_param__stride[1]",),
                 type="number",
                 classes="mx-2",
-                change="flushState('stride')",
+                change="flushState('xai_param__stride')",
             )
         vuetify.VTextField(
             label="Number of random masks used in the algorithm",
-            v_show="saliency_parameters.includes('n')",
-            v_model=("n", 1000),
+            v_show=("xai_params_to_show.includes('n')",),
+            v_model=("xai_param__n", 1000),
             type="number",
         )
         vuetify.VTextField(
             label="Spatial resolution of the small masking grid",
-            v_show="saliency_parameters.includes('s')",
-            v_model=("s", 8),
+            v_show=("xai_params_to_show.includes('s')",),
+            v_model=("xai_param__s", 8),
             type="number",
         )
         vuetify.VSlider(
             label="P1",
             persistent_hint=True,
             hint="Probability of the grid cell being set to 1 (otherwise 0). This should be a float value in the [0, 1] range.",
-            v_show="saliency_parameters.includes('p1')",
-            v_model=("p1", 0.5),
+            v_show=("xai_params_to_show.includes('p1')",),
+            v_model=("xai_param__p1", 0.5),
             min="0",
             max="1",
             step="0.01",
@@ -269,8 +272,8 @@ def create_section_xai_parameters():
         )
         vuetify.VTextField(
             label="Seed",
-            v_show="saliency_parameters.includes('seed')",
-            v_model=("seed", 1234),
+            v_show=("xai_params_to_show.includes('seed')",),
+            v_model=("xai_param__seed", 1234),
             type="number",
             hint="A seed to pass into the constructed random number generator to allow for reproducibility",
             persistent_hint=True,
@@ -278,8 +281,8 @@ def create_section_xai_parameters():
         )
         vuetify.VSlider(
             label="Threads",
-            v_show="saliency_parameters.includes('threads')",
-            v_model=("threads", 0),
+            v_show=("xai_params_to_show.includes('threads')",),
+            v_model=("xai_param__threads", 0),
             min="0",
             max="32",
             hint="The number of threads to utilize when generating masks. If this is <=0 or None, no threading is used and processing is performed in-line serially.",
@@ -290,18 +293,17 @@ def create_section_xai_parameters():
         )
         vuetify.VSelect(
             label="Proximity Metric",
-            v_show="saliency_parameters.includes('proximity_metric')",
-            v_model=("proximity_metric", "cosine"),
+            v_show=("xai_params_to_show.includes('proximity_metric')",),
+            v_model=("xai_param__proximity_metric", "cosine"),
             items=(
-                "similarity_metric_items",
-                options.SIMILARITY_METRICS,
+                "xai_param__proximity_metric_available",
+                options.PROXIMITY_METRIC_AVAILABLE,
             ),
-            type="number",
         )
         vuetify.VSwitch(
             label="Debiased",
-            v_show="saliency_parameters.includes('debiased')",
-            v_model=("debiased", False),
+            v_show=("xai_params_to_show.includes('debiased')",),
+            v_model=("xai_param__debiased", False),
         )
 
     return _card
@@ -327,22 +329,22 @@ def create_section_xai_execution():
         vuetify.VSpacer()
         vuetify.VTextField(
             label="Min",
-            v_model=("heatmap_color_min", -1),
+            v_model=("xai_viz_color_min", -1),
             **compact_styles,
             style="max-width: 75px",
             classes="mx-1",
-            disabled=("xai_saliency_mode !== 'custom'",),
+            disabled=("xai_viz_heatmap_color_mode !== 'custom'",),
         )
         vuetify.VTextField(
             label="Max",
-            v_model=("heatmap_color_max", 1),
+            v_model=("xai_viz_color_max", 1),
             **compact_styles,
             style="max-width: 75px",
             classes="mx-1",
-            disabled=("xai_saliency_mode !== 'custom'",),
+            disabled=("xai_viz_heatmap_color_mode !== 'custom'",),
         )
         vuetify.VSlider(
-            v_model=("xai_saliency_opacity", 0.5),
+            v_model=("xai_viz_heatmap_opacity", 0.5),
             min=0,
             max=1,
             step=0.05,
@@ -350,7 +352,7 @@ def create_section_xai_execution():
             style="max-width: 300px",
         )
         with vuetify.VBtnToggle(
-            v_model=("xai_saliency_mode", "full"),
+            v_model=("xai_viz_heatmap_color_mode", "full"),
             mandatory=True,
             classes="mx-2",
             **compact_styles,
@@ -373,73 +375,75 @@ def create_section_xai_execution():
 
 
 def create_xai_classification():
-    container = Div(v_if="xai_type == 'classification'", classes="d-flex flex-column")
+    container = Div(
+        v_if=("xai_viz_type == 'classification'",), classes="d-flex flex-column"
+    )
     with container:
         vuetify.VSelect(
-            v_model="xai_class_active",
-            items=("prediction_classes", []),
+            v_model=("xai_viz_classification_selected",),
+            items=("xai_viz_classification_selected_available", []),
             **compact_styles,
             classes="mb-2",
         )
         xai.XaiImage(
-            v_if="image_url_1",
-            src=("image_url_1",),
+            v_if=("input_1_img_url",),
+            src=("input_1_img_url",),
             max_height=400,
             areas=("[]",),
-            heatmaps=("xai_class_heatmaps", {}),
-            heatmap_opacity=("xai_saliency_opacity",),
+            heatmaps=("xai_viz_classification_heatmaps", {}),
+            heatmap_opacity=("xai_viz_heatmap_opacity",),
             heatmap_color_preset="rainbow",
-            heatmap_color_range=("xai_color_range", [-1, 1]),
-            heatmap_active=("xai_class_active", "heatmap_0"),
-            heatmap_color_mode=("xai_saliency_mode",),
-            color_range="[heatmap_color_min, heatmap_color_max] = $event",
+            heatmap_color_range=("xai_viz_heatmap_color_range", [-1, 1]),
+            heatmap_active=("xai_viz_classification_selected", "heatmap_0"),
+            heatmap_color_mode=("xai_viz_heatmap_color_mode",),
+            color_range="[xai_viz_color_min, xai_viz_color_max] = $event",
         )
 
     return container
 
 
 def create_xai_similarity():
-    container = Div(v_if="xai_type == 'similarity'")
+    container = Div(v_if=("xai_viz_type == 'similarity'",))
     with container:
         xai.XaiImage(
-            v_if="image_url_2",
-            src=("image_url_2",),
+            v_if=("input_2_img_url",),
+            src=("input_2_img_url",),
             max_height=400,
             areas=("[]",),
-            heatmaps=("xai_similarity_heatmaps", {}),
-            heatmap_opacity=("xai_saliency_opacity",),
+            heatmaps=("xai_viz_similarity_heatmaps", {}),
+            heatmap_opacity=("xai_viz_heatmap_opacity",),
             heatmap_color_preset="rainbow",
-            heatmap_color_range=("xai_color_range", [-1, 1]),
+            heatmap_color_range=("xai_viz_heatmap_color_range", [-1, 1]),
             heatmap_active="heatmap_0",
-            heatmap_color_mode=("xai_saliency_mode",),
-            color_range="[heatmap_color_min, heatmap_color_max] = $event",
+            heatmap_color_mode=("xai_viz_heatmap_color_mode",),
+            color_range="[xai_viz_color_min, xai_viz_color_max] = $event",
         )
 
     return container
 
 
 def create_xai_detection():
-    container = Div(v_if="xai_type == 'detection'", classes="d-flex flex-column")
+    container = Div(v_if=("xai_viz_type == 'detection'",), classes="d-flex flex-column")
     with container:
         vuetify.VSelect(
-            v_model="xai_detection_active",
-            items=("object_detections", []),
-            change="object_detection_idx = [1 + Number(xai_detection_active.split('_')[1])]",
+            v_model=("xai_viz_detection_selected",),
+            items=("model_viz_detection_areas", []),
+            change="model_viz_detection_area_actives = [1 + Number(xai_viz_detection_selected.split('_')[1])]",
             **compact_styles,
             classes="mb-2",
         )
         xai.XaiImage(
-            v_if="image_url_1",
-            src=("image_url_1",),
+            v_if=("input_1_img_url",),
+            src=("input_1_img_url",),
             max_height=400,
             areas=("[]",),
-            heatmaps=("xai_detection_heatmaps", {}),
-            heatmap_opacity=("xai_saliency_opacity",),
+            heatmaps=("xai_viz_detection_heatmaps", {}),
+            heatmap_opacity=("xai_viz_heatmap_opacity",),
             heatmap_color_preset="rainbow",
-            heatmap_color_range=("xai_color_range", [-1, 1]),
-            heatmap_active=("xai_detection_active", "heatmap_0"),
-            heatmap_color_mode=("xai_saliency_mode",),
-            color_range="[heatmap_color_min, heatmap_color_max] = $event",
+            heatmap_color_range=("xai_viz_heatmap_color_range", [-1, 1]),
+            heatmap_active=("xai_viz_detection_selected", "heatmap_0"),
+            heatmap_color_mode=("xai_viz_heatmap_color_mode",),
+            color_range="[xai_viz_color_min, xai_viz_color_max] = $event",
         )
 
     return container
@@ -450,9 +454,12 @@ def create_xai_detection():
 # -----------------------------------------------------------------------------
 
 
-@state.change("heatmap_color_min", "heatmap_color_max")
-def heatmap_color_min_change(heatmap_color_min, heatmap_color_max, **kwargs):
+@state.change("xai_viz_color_min", "xai_viz_color_max")
+def xai_viz_color_range_change(xai_viz_color_min, xai_viz_color_max, **kwargs):
     try:
-        state.xai_color_range = [float(heatmap_color_min), float(heatmap_color_max)]
+        state.xai_viz_heatmap_color_range = [
+            float(xai_viz_color_min),
+            float(xai_viz_color_max),
+        ]
     except:
         pass

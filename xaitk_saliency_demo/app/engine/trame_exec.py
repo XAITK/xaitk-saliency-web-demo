@@ -16,14 +16,19 @@ def initialize(task_active, **kwargs):
     trame_state.on_xai_algo_change(state.saliency_active)
     trame_state.reset_xai_execution()
 
+    import json
+    from .. import ui
+
+    print(json.dumps(ui.layout.state, indent=2))
+
 
 def update_active_xai_algorithm():
     """Executed when:
-    -> state.change(saliency_active, *xai_params)
+    -> state.change(saliency_active, xai_param__{*xai_params})
     """
     params = {}
     for name in options.SALIENCY_PARAMS[state.saliency_active]:
-        value = state[name]
+        value = state[f"xai_param__{name}"]
         convert = options.ALL_SALIENCY_PARAMS[name]
         if isinstance(value, list):
             params[name] = [convert(v) for v in value]
@@ -50,14 +55,15 @@ def update_model_execution():
         alt.Chart(df)
         .mark_bar()
         .encode(
-            x=alt.X("Score", axis=alt.Axis(format="%", title="percentage")),
-            y=alt.Y("Class", sort="-x"),
+            x=alt.X("Score", axis=alt.Axis(format="%", title=None)),
+            y=alt.Y("Class", axis=alt.Axis(title=None), sort="-x"),
         )
         .properties(width="container", height=145)
     )
 
     ctrl.classification_chart_update(chart)
-    state.prediction_classes = list(
+    state.xai_viz_classification_selected = "heatmap_0"
+    state.xai_viz_classification_selected_available = list(
         map(
             lambda t: {
                 "text": t[1][0],
@@ -69,10 +75,10 @@ def update_model_execution():
     )
 
     # Similarity
-    state.prediction_similarity = results.get("similarity", 0) * 100
+    state.model_viz_similarity = results.get("similarity", 0) * 100
 
     # Detection
-    state.object_detections = [
+    state.model_viz_detection_areas = [
         {
             "value": f"heatmap_{i}",
             "text": f"{v[0]} - {int(v[1] * 100)}",
@@ -91,7 +97,7 @@ def update_xai_execution():
     """
     output = AI.run_saliency()
     print("run_saliency...")
-    state.xai_type = output.get("type")
+    state.xai_viz_type = output.get("type")
 
     if output.get("type") == "classification":
         _xai_saliency = output.get("saliency")
@@ -101,14 +107,14 @@ def update_xai_execution():
             _key = f"heatmap_{i}"
             heat_maps[_key] = _xai_saliency[i].ravel().tolist()
 
-        state.xai_class_heatmaps = heat_maps
+        state.xai_viz_classification_heatmaps = heat_maps
 
     elif output.get("type") == "similarity":
         _xai_saliency = output.get("saliency")
         heat_maps = {
             "heatmap_0": _xai_saliency.ravel().tolist(),
         }
-        state.xai_similarity_heatmaps = heat_maps
+        state.xai_viz_similarity_heatmaps = heat_maps
     elif output.get("type") == "detection":
         _xai_saliency = output.get("saliency")
         nb_classes = _xai_saliency.shape[0]
@@ -117,7 +123,7 @@ def update_xai_execution():
             _key = f"heatmap_{i}"
             heat_maps[_key] = _xai_saliency[i].ravel().tolist()
 
-        state.xai_detection_heatmaps = heat_maps
+        state.xai_viz_detection_heatmaps = heat_maps
 
     else:
         print(output.get("type"))

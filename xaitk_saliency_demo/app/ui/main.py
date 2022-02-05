@@ -51,7 +51,7 @@ with layout.toolbar:
         v_show=("task_active == 'classification'",),
         label="Top classes",
         v_model=("TOP_K", 5),
-        items=("class_numbers", list(range(5, 11))),
+        items=("TOP_K_available", list(range(5, 11))),
         **ui_helper.compact_styles,
         style="max-width: 70px",
     )
@@ -78,12 +78,13 @@ with layout.content:
 state.update(
     {
         "input_file": None,
-        "window_size": [50, 50],
-        "stride": [20, 20],
+        "input_1_name": "Query",
+        "input_2_name": "Reference",
         #
-        "xai_type": "",
-        "image_url_1_name": "Query",
-        "image_url_2_name": "Reference",
-        "saliency_parameters": [],
+        "xai_params_to_show": [],
+        "xai_param__window_size": [50, 50],
+        "xai_param__stride": [20, 20],
+        #
+        "xai_viz_type": "",
     }
 )

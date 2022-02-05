@@ -13,7 +13,7 @@ TASK_DEPENDENCY = {
             {"text": "VGG-16", "value": "SimilarityVgg16"},
         ],
         # Task => input
-        "image_count": 2,
+        "input_expected": 2,
     },
     "detection": {
         # Task => saliency
@@ -28,7 +28,7 @@ TASK_DEPENDENCY = {
             {"text": "RetinaNet", "value": "DetectionRetinaNet"},
         ],
         # Task => input
-        "image_count": 1,
+        "input_expected": 1,
         # Better defaults:
         "n": 200,
         "proximity_metric": "cosine",
@@ -48,7 +48,7 @@ TASK_DEPENDENCY = {
             {"text": "VGG-16", "value": "ClassificationVgg16"},
         ],
         # Task => input
-        "image_count": 1,
+        "input_expected": 1,
     },
 }
 

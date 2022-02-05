@@ -22,7 +22,7 @@ class XaiController:
             return False
 
         inputs = [self._image_1, self._image_2]
-        for i in range(state.image_count):
+        for i in range(state.input_expected):
             if inputs[i] is None:
                 return False
 

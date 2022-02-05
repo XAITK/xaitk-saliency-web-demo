@@ -12,21 +12,19 @@ AI = main.XaiController()
 
 
 def reset_xai_execution():
-    state.xai_type = None
+    state.xai_viz_type = None
 
 
 def reset_model_execution():
-    state.classification_model_execution_chart = {}
-    state.prediction_classes = []
-    state.prediction_similarity = 0
-    state.object_detections = []
+    state.model_viz_classification_chart = {}
+    state.model_viz_similarity = 0
+    state.model_viz_detection_areas = []
 
 
 def reset_all():
-    state.need_input = True
-    state.image_url_1 = None
-    state.image_url_2 = None
-    state.predict_url = None
+    state.input_needed = True
+    state.input_1_img_url = None
+    state.input_2_img_url = None
     reset_model_execution()
     reset_xai_execution()
 
@@ -66,13 +64,15 @@ def on_nb_class_change(**kwargs):
 @state.change("saliency_active")
 def on_xai_algo_change(saliency_active, **kwargs):
     # Show/hide parameters relevant to current algo
-    state.saliency_parameters = options.SALIENCY_PARAMS[saliency_active]
+    state.xai_params_to_show = options.SALIENCY_PARAMS[saliency_active]
     trame_exec.update_active_xai_algorithm()
     reset_xai_execution()
 
 
 @state.change("input_file")
-def on_input_file_change(input_file, image_url_1, image_url_2, image_count, **kwargs):
+def on_input_file_change(
+    input_file, input_1_img_url, input_2_img_url, input_expected, **kwargs
+):
     """An image is uploaded, process it..."""
     if not input_file:
         return
@@ -82,32 +82,32 @@ def on_input_file_change(input_file, image_url_1, image_url_2, image_count, **kw
 
     # Make file available as image on HTML side
     _url = f"data:{input_file.get('type')};base64,{base64.encodebytes(input_file.get('content')).decode('utf-8')}"
-    if not image_url_1 or image_count == 1:
-        state.image_url_1 = _url
+    if not input_1_img_url or input_expected == 1:
+        state.input_1_img_url = _url
         AI.set_image_1(input_file.get("content"))
-        if image_count == 1:
+        if input_expected == 1:
             trame_exec.update_model_execution()
-    elif not image_url_2 and image_count == 2:
-        state.image_url_2 = _url
+    elif not input_2_img_url and input_expected == 2:
+        state.input_2_img_url = _url
         AI.set_image_2(input_file.get("content"))
         trame_exec.update_model_execution()
 
 
-@state.change("image_url_1", "image_url_2")
-def reset_image(image_url_1, image_url_2, image_count, **kwargs):
-    """Method called when image_url_X is changed which can happen when setting them but also when cleared on the client side"""
+@state.change("input_1_img_url", "input_2_img_url")
+def reset_image(input_1_img_url, input_2_img_url, input_expected, **kwargs):
+    """Method called when input_x_img_url is changed which can happen when setting them but also when cleared on the client side"""
     count = 0
-    if image_url_1:
+    if input_1_img_url:
         count += 1
-    if image_url_2 and image_count > 1:
+    if input_2_img_url and input_expected > 1:
         count += 1
 
     # Hide button if we have all the inputs we need
-    state.need_input = count < image_count
+    state.input_needed = count < input_expected
     reset_xai_execution()
 
 
-@state.change(*list(options.ALL_SALIENCY_PARAMS.keys()))
+@state.change(*[f"xai_param__{k}" for k in options.ALL_SALIENCY_PARAMS.keys()])
 def on_saliency_param_update(**kwargs):
     trame_exec.update_active_xai_algorithm()
     reset_xai_execution()

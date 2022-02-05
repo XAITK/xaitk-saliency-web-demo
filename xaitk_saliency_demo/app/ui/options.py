@@ -4,7 +4,7 @@ TASKS = [
     {"text": "Image Classification", "value": "classification"},
 ]
 
-SIMILARITY_METRICS = [
+PROXIMITY_METRIC_AVAILABLE = [
     "braycurtis",
     "canberra",
     "chebyshev",
