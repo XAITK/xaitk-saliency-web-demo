@@ -46,6 +46,13 @@ __all__ = [
 ]
 
 # -----------------------------------------------------------------------------
+# Perform monkey patch to get class probabilities
+# -----------------------------------------------------------------------------
+
+RoIHeads.postprocess_detections = faster_rcnn_postprocess_detections
+RetinaNet.postprocess_detections = retinanet_postprocess_detections
+
+# -----------------------------------------------------------------------------
 # Number of classes to keep
 # -----------------------------------------------------------------------------
 
@@ -198,8 +205,6 @@ class DetectionFasterRCNN(AbstractModel, DetectionPredict, DetectionRun):
                 box_score_thresh=0.0,
             )
         )
-        # Perform monkey patch to get class probabilities
-        RoIHeads.postprocess_detections = faster_rcnn_postprocess_detections
 
 
 class DetectionRetinaNet(AbstractModel, DetectionPredict, DetectionRun):
@@ -211,8 +216,6 @@ class DetectionRetinaNet(AbstractModel, DetectionPredict, DetectionRun):
                 detections_per_img=100,
             )
         )
-        # Perform monkey patch to get class probabilities
-        RetinaNet.postprocess_detections = retinanet_postprocess_detections
 
 
 # -----------------------------------------------------------------------------
