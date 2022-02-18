@@ -71,7 +71,7 @@ class ClfModel(ClassifyImage):
     @torch.no_grad()
     def classify_images(self, image_iter):
         for img in image_iter:
-            inp = imagenet_model_loader(img).unsqueeze(0)
+            inp = imagenet_model_loader(img).unsqueeze(0).to(self.model.device)
             vec = self.model(inp).cpu().numpy().squeeze()
             out = softmax(vec)
             yield dict(zip(self.get_labels(), out[self.idx]))

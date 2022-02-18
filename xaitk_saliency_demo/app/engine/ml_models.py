@@ -27,7 +27,18 @@ from .assets import (
     coco_model_loader,
 )
 
+from xaitk_saliency_demo.app import cli
+
 from trame import state
+
+# -----------------------------------------------------------------------------
+
+DEVICE = torch.device("cpu")
+if not cli.get_args().cpu and torch.cuda.is_available():
+    DEVICE = torch.device("cuda")
+    print(" ~~~ Using GPU ~~~ \n")
+
+# -----------------------------------------------------------------------------
 
 __all__ = [
     # API ------------------
@@ -64,19 +75,26 @@ state.TOP_K = 5
 
 
 class AbstractModel:
-    def __init__(self, model):
+    def __init__(self, model, device=DEVICE):
+        self._device = device
         self.topk = 10
-        self._model = model
+        self._model = model.to(self._device)
         self._model.eval()
 
     def __call__(self, *args, **kwargs):
         return self._model(*args, **kwargs)
 
+    @property
+    def device(self):
+        return self._device
+
 
 class DetectionPredict:
     @torch.no_grad()
     def predict(self, input):
-        output = self._model(coco_model_loader(input).unsqueeze(0))[0]
+        input = coco_model_loader(input).unsqueeze(0)
+        input = input.to(self.device)
+        output = self._model(input)[0]
         boxes = output["boxes"].cpu().numpy()
         scores = output["scores"][:, coco_valid_idxs].cpu().numpy()
         return format_detection(boxes, scores)  # .astype('float32')
@@ -85,7 +103,9 @@ class DetectionPredict:
 class ResNetPredict:
     @torch.no_grad()
     def predict(self, input):
-        output = self._model(imagenet_model_loader(input).unsqueeze(0)).squeeze()
+        input = imagenet_model_loader(input).unsqueeze(0)
+        input = input.to(self.device)
+        output = self._model(input).squeeze()
         return output.cpu().numpy()
 
 

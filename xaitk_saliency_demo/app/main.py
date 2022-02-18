@@ -1,4 +1,5 @@
 from . import controller, ui
+from . import cli  # noqa
 
 
 def start_server():
