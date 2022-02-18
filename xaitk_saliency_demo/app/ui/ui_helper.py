@@ -3,6 +3,10 @@ from trame import state, controller as ctrl
 
 from . import options
 
+import multiprocessing
+
+NB_THREADS = int(multiprocessing.cpu_count() / 2 + .5)
+
 # -----------------------------------------------------------------------------
 # Global properties
 # -----------------------------------------------------------------------------
@@ -282,7 +286,7 @@ def create_section_xai_parameters():
         vuetify.VSlider(
             label="Threads",
             v_show=("xai_params_to_show.includes('threads')",),
-            v_model=("xai_param__threads", 0),
+            v_model=("xai_param__threads", NB_THREADS),
             min="0",
             max="32",
             hint="The number of threads to utilize when generating masks. If this is <=0 or None, no threading is used and processing is performed in-line serially.",
