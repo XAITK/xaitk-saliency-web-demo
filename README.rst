@@ -30,8 +30,12 @@ venv creation for AI
     conda activate xaitk
     conda install "pytorch==1.9.1" "torchvision==0.10.1" -c pytorch
     conda install scipy "scikit-learn==0.24.2" "scikit-image==0.18.3" -c conda-forge
+
+    # For development when inside repo
     pip install -e .
 
+    # For testing (no need to clone repo)
+    pip install xaitk-saliency-demo
 
 Run the application
 
