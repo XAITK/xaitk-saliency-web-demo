@@ -42,7 +42,7 @@ Run the application
 .. code-block:: console
 
     conda activate xaitk
-    xaitk_saliency_demo
+    xaitk-saliency-demo
 
 
 |image_1| |image_2| |image_3| |image_4|
