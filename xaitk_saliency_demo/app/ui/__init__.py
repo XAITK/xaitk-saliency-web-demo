@@ -1,5 +1,5 @@
-from .main import layout
+from .main import initialize
 
 __all__ = [
-    "layout",
+    "initialize",
 ]

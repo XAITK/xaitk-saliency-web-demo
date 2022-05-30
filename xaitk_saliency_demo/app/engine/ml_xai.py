@@ -24,6 +24,10 @@ from xaitk_saliency.utils.masking import occlude_image_batch
 # labels
 from .assets import imagenet_categories, imagenet_model_loader
 
+import logging
+
+logger = logging.getLogger("xaitks_saliency_demo")
+
 FILL = np.uint8(np.asarray([0.485, 0.456, 0.406]) * 255)
 
 SALIENCY_TYPES = {
@@ -90,7 +94,7 @@ class Saliency:
                 param_keys = value.get("params", params.keys())
                 setattr(self, key, constructor(**{k: params[k] for k in param_keys}))
         except:
-            print(f"Could not find {name} in {list(SALIENCY_TYPES.keys())}")
+            logger.info(f"Could not find {name} in {list(SALIENCY_TYPES.keys())}")
 
 
 class ClassificationSaliency(Saliency):
