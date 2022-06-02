@@ -37,6 +37,7 @@ DEVICE = torch.device("cpu")
 
 
 def update_ml_device(cpu_only=True):
+    global DEVICE
     if not cpu_only and torch.cuda.is_available():
         DEVICE = torch.device("cuda")
         logger.info(" ~~~ Using GPU ~~~ \n")
@@ -75,7 +76,9 @@ RetinaNet.postprocess_detections = retinanet_postprocess_detections
 
 
 class AbstractModel:
-    def __init__(self, server, model, device=DEVICE):
+    def __init__(self, server, model, device=None):
+        if device is None:
+            device = DEVICE
         self._server = server
         self._device = device
         self.topk = 10
