@@ -2,6 +2,7 @@ import pandas as pd
 import altair as alt
 
 from . import options
+from trame_client.encoders import numpy
 
 
 import logging
@@ -77,17 +78,19 @@ def initialize(server):
         state.model_viz_similarity = results.get("similarity", 0) * 100
 
         # Detection
-        state.model_viz_detection_areas = [
-            {
-                "value": f"heatmap_{i}",
-                "text": f"{v[0]} - {int(v[1] * 100)}",
-                "id": i + 1,
-                "class": v[0],
-                "probability": int(v[1] * 100),
-                "area": [v[2][0], v[2][1], v[2][2] - v[2][0], v[2][3] - v[2][1]],
-            }
-            for i, v in enumerate(results.get("detection", []))
-        ]
+        state.model_viz_detection_areas = numpy.encode(
+            [
+                {
+                    "value": f"heatmap_{i}",
+                    "text": f"{v[0]} - {int(v[1] * 100)}",
+                    "id": i + 1,
+                    "class": v[0],
+                    "probability": int(v[1] * 100),
+                    "area": [v[2][0], v[2][1], v[2][2] - v[2][0], v[2][3] - v[2][1]],
+                }
+                for i, v in enumerate(results.get("detection", []))
+            ]
+        )
 
     def update_xai_execution():
         """Executed when:
