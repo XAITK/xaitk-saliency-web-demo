@@ -1,25 +1,26 @@
+from typing import Dict, Any, Iterable
 import numpy as np
 from scipy.special import softmax
 
 # pytorch
 import torch
-import torch.nn as nn
 
 # xaitk-saliency
 from xaitk_saliency.impls.perturb_image.rise import RISEGrid
-from xaitk_saliency.impls.perturb_image.sliding_window import SlidingWindow
 from xaitk_saliency.impls.gen_detector_prop_sal.drise_scoring import DRISEScoring
-from xaitk_saliency.impls.gen_descriptor_sim_sal.similarity_scoring import (
-    SimilarityScoring,
-)
+
+from xaitk_saliency.impls.gen_image_similarity_blackbox_sal.sbsm import SBSMStack
 from xaitk_saliency.impls.gen_image_classifier_blackbox_sal.rise import RISEStack
 from xaitk_saliency.impls.gen_image_classifier_blackbox_sal.slidingwindow import (
     SlidingWindowStack,
 )
+from xaitk_saliency.impls.gen_object_detector_blackbox_sal.drise import DRISEStack
+from xaitk_saliency.impls.gen_object_detector_blackbox_sal.drise import RandomGridStack
 
-# xaitk-saliency
+# smqtk-*
 from smqtk_classifier import ClassifyImage
-from xaitk_saliency.utils.masking import occlude_image_batch
+from smqtk_descriptors.interfaces.image_descriptor_generator import ImageDescriptorGenerator
+from smqtk_detection import DetectImageObjects
 
 # labels
 from .assets import imagenet_categories, imagenet_model_loader
@@ -28,9 +29,16 @@ import logging
 
 logger = logging.getLogger("xaitks_saliency_demo")
 
+# Model source dataset's mean pixel value. It just so happens that the models
+# listed in `ml_models.py`. If this becomes violated then there will need to be
+# a mechanism to get this on a per-model basis.
 FILL = np.uint8(np.asarray([0.485, 0.456, 0.406]) * 255)
 
+# Mapping of labels to variable construction metadata used in `Saliency` class
+# instantiation. This ultimately maps a saliency task label to the algorithm
+# instance to be used.
 SALIENCY_TYPES = {
+    # Classification
     "RISEStack": {
         "_saliency": {
             "class": RISEStack,
@@ -41,27 +49,27 @@ SALIENCY_TYPES = {
             "class": SlidingWindowStack,
         },
     },
-    "similarity-saliency": {
-        "_perturb": {
-            "class": SlidingWindow,
-            "params": ["window_size", "stride"],
-        },
+
+    # Similarity
+    "SBSMStack": {
         "_saliency": {
-            "class": SimilarityScoring,
-            "params": ["proximity_metric"],
-        },
+            "class": SBSMStack,
+        }
     },
-    "detection-saliency": {
-        "_perturb": {
-            "class": RISEGrid,
-            "params": ["n", "s", "p1", "seed", "threads"],
-        },
+
+    # Object Detection
+    "DRISEStack": {
         "_saliency": {
-            "class": DRISEScoring,
-            "params": ["proximity_metric"],
-        },
+            "class": DRISEStack
+        }
+    },
+    "RandomGridStack": {
+        "_saliency": {
+            "class": RandomGridStack
+        }
     },
 }
+
 
 # SMQTK black-box classifier
 class ClfModel(ClassifyImage):
@@ -81,20 +89,41 @@ class ClfModel(ClassifyImage):
             yield dict(zip(self.get_labels(), out[self.idx]))
 
     def get_config(self):
-        # Required by a parent class.
+        # Required by a parent class. Will not be used in this context.
         return {}
 
 
+# SMQTK black-box descriptor generator
+class DescrModel(ImageDescriptorGenerator):
+
+    def __init__(self, model):
+        self.model = model
+
+    @torch.no_grad()
+    def generate_arrays_from_images(self, img_mat_iter: Iterable[np.ndarray]) -> Iterable[np.ndarray]:
+        for img in img_mat_iter:
+            inp = imagenet_model_loader(img).unsqueeze(0).to(self.model.device)
+            vec = self.model(inp).cpu().numpy().squeeze()
+            yield vec
+
+    def get_config(self) -> Dict[str, Any]:
+        # Required by a parent class. Will not be used in this context.
+        return {}
+
+
+# -----------------------------------------------------------------------------
 class Saliency:
     def __init__(self, model, name, params):
         self._model = model
         try:
-            for key, value in SALIENCY_TYPES[name].items():
-                constructor = value.get("class")
-                param_keys = value.get("params", params.keys())
-                setattr(self, key, constructor(**{k: params[k] for k in param_keys}))
-        except:
+            kv_pairs = SALIENCY_TYPES[name].items()
+        except IndexError:
             logger.info(f"Could not find {name} in {list(SALIENCY_TYPES.keys())}")
+            return
+        for key, value in kv_pairs:
+            constructor = value.get("class")
+            param_keys = value.get("params", params.keys())
+            setattr(self, key, constructor(**{k: params[k] for k in param_keys}))
 
 
 class ClassificationSaliency(Saliency):
@@ -109,42 +138,30 @@ class ClassificationSaliency(Saliency):
 
 
 class SimilaritySaliency(Saliency):
-    def run(self, query, reference):
-        # generate query/reference features
-        query_feat = self._model.predict(query)
-        ref_feat = self._model.predict(reference)
-        # generate perturbed features
-        pert_masks = self._perturb(reference)
-        pert_ref_imgs = occlude_image_batch(reference, pert_masks, FILL)
-        pert_ref_feats = np.asarray([self._model.predict(pi) for pi in pert_ref_imgs])
-        # generate saliency map
-        sal = self._saliency(query_feat, ref_feat, pert_ref_feats, pert_masks)
+    def run(self, reference, query):
+        self._saliency.fill = FILL
+        sal = self._saliency(reference, [query], DescrModel(self._model))
         return {
             "type": "similarity",
-            "references": ref_feat,
-            "masks": pert_masks,
-            "predictions": pert_ref_feats,
             "saliency": sal,
         }
 
 
 class DetectionSaliency(Saliency):
     def run(self, input, *_):
-        # generate reference prediction
+        # Generate reference image detections
+        detector: DetectImageObjects = self._model.model
+        bboxes, scores, _ = self._model.predict(input)
+        # Trim to top-k
         topk = self._model.topk
-        ref_preds = self._model.predict(input)[topk, :]
-        # generate perturbed predictions
-        pert_masks = self._perturb(input)
-        pert_imgs = occlude_image_batch(input, pert_masks, FILL)
-        pert_preds = np.asarray([self._model.predict(pi) for pi in pert_imgs])
-        # generate saliency map
-        sal = self._saliency(ref_preds, pert_preds, pert_masks)
+        bboxes = bboxes[topk]
+        scores = scores[topk]
+        # Generate saliency maps
+        self._saliency.fill = FILL
+        sal = self._saliency(input, bboxes, scores, detector)
 
         return {
             "type": "detection",
-            "references": ref_preds,
-            "masks": pert_masks,
-            "predictions": pert_preds,
             "saliency": sal,
         }
 

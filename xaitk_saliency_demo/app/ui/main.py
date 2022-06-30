@@ -32,8 +32,8 @@ def initialize(server):
     state.update(
         {
             "input_file": None,
-            "input_1_name": "Query",
-            "input_2_name": "Reference",
+            "input_1_name": "Reference",
+            "input_2_name": "Query",
             #
             "xai_params_to_show": [],
             "xai_param__window_size": [50, 50],

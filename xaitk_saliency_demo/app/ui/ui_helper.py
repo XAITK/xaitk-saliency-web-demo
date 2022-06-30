@@ -297,7 +297,7 @@ def create_section_xai_parameters():
         vuetify.VSelect(
             label="Proximity Metric",
             v_show=("xai_params_to_show.includes('proximity_metric')",),
-            v_model=("xai_param__proximity_metric", "cosine"),
+            v_model=("xai_param__proximity_metric", "euclidean"),
             items=(
                 "xai_param__proximity_metric_available",
                 options.PROXIMITY_METRIC_AVAILABLE,
@@ -379,7 +379,7 @@ def create_xai_similarity():
     with container:
         trame.XaiImage(
             v_if=("input_2_img_url",),
-            src=("input_2_img_url",),
+            src=("input_1_img_url",),
             max_height=400,
             areas=("[]",),
             heatmaps=("xai_viz_similarity_heatmaps", {}),
