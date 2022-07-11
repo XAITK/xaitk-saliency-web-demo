@@ -14,8 +14,6 @@ TASK_DEPENDENCY = {
         ],
         # Task => input
         "input_expected": 2,
-        # Better defaults:
-        "proximity_metric": "euclidean",
     },
     "detection": {
         # Task => saliency
@@ -32,10 +30,6 @@ TASK_DEPENDENCY = {
         ],
         # Task => input
         "input_expected": 1,
-        # Better defaults:
-        "n": 200,
-        "p1": 0.05,
-        "proximity_metric": "euclidean",
     },
     "classification": {
         # Task => saliency
