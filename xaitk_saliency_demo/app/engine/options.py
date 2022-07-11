@@ -1,9 +1,9 @@
 TASK_DEPENDENCY = {
     "similarity": {
         # Task => saliency
-        "saliency_active": "similarity-saliency",
+        "saliency_active": "SBSMStack",
         "saliency_available": [
-            {"text": "Default", "value": "similarity-saliency"},
+            {"text": "SBSM", "value": "SBSMStack"},
         ],
         # Task => model
         "model_active": "SimilarityResNet50",
@@ -17,21 +17,19 @@ TASK_DEPENDENCY = {
     },
     "detection": {
         # Task => saliency
-        "saliency_active": "detection-saliency",
+        "saliency_active": "DRISEStack",
         "saliency_available": [
-            {"text": "Default", "value": "detection-saliency"},
+            {"text": "DRISE", "value": "DRISEStack"},
+            {"text": "RandomGridStack", "value": "RandomGridStack"}
         ],
         # Task => model
-        "model_active": "DetectionFasterRCNN",
+        "model_active": "DetectionFRCNN",
         "model_available": [
-            {"text": "Faster R-CNN", "value": "DetectionFasterRCNN"},
-            {"text": "RetinaNet", "value": "DetectionRetinaNet"},
+            {"text": "FRCNN (COCO)", "value": "DetectionFRCNN"},
+            {"text": "CenterNet (VisDrone)", "value": "DetectionCenterNetVisdrone"},
         ],
         # Task => input
         "input_expected": 1,
-        # Better defaults:
-        "n": 200,
-        "proximity_metric": "cosine",
     },
     "classification": {
         # Task => saliency
@@ -53,10 +51,14 @@ TASK_DEPENDENCY = {
 }
 
 SALIENCY_PARAMS = {
+    # similarity
+    "SBSMStack": ["window_size", "stride", "proximity_metric", "threads"],
+    # detection
+    "DRISEStack": ["n", "s", "p1", "seed", "threads"],
+    "RandomGridStack": ["n", "s", "p1", "seed", "threads"],
+    # classification
     "RISEStack": ["n", "s", "p1", "seed", "threads", "debiased"],
     "SlidingWindowStack": ["window_size", "stride", "threads"],
-    "similarity-saliency": ["window_size", "stride", "proximity_metric"],
-    "detection-saliency": ["n", "s", "p1", "seed", "threads", "proximity_metric"],
 }
 
 ALL_SALIENCY_PARAMS = {
