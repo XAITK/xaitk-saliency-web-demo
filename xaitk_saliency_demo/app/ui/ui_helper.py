@@ -330,6 +330,22 @@ def create_section_xai_execution(ctrl):
         )
         _header.add_child("XAI")
         vuetify.VSpacer()
+        vuetify.VTextField(
+            label="Min",
+            v_model=("xai_viz_color_min", -1),
+            **compact_styles,
+            style="max-width: 75px",
+            classes="mx-1",
+            disabled=("xai_viz_heatmap_color_mode !== 'custom'",),
+        )
+        vuetify.VTextField(
+            label="Max",
+            v_model=("xai_viz_color_max", 1),
+            **compact_styles,
+            style="max-width: 75px",
+            classes="mx-1",
+            disabled=("xai_viz_heatmap_color_mode !== 'custom'",),
+        )
         vuetify.VSlider(
             v_model=("xai_viz_heatmap_opacity", 0.5),
             min=0,
@@ -338,6 +354,20 @@ def create_section_xai_execution(ctrl):
             **compact_styles,
             style="max-width: 300px",
         )
+        with vuetify.VBtnToggle(
+            v_model=("xai_viz_heatmap_color_mode", "full"),
+            mandatory=True,
+            classes="mx-2",
+            **compact_styles,
+        ):
+            for value, icon in options.HEAT_MAP_MODES:
+                with vuetify.VBtn(
+                    icon=True,
+                    value=value,
+                    small=True,
+                    **compact_styles,
+                ):
+                    vuetify.VIcon(icon, small=True)
 
     with _content:
         create_xai_classification()
@@ -366,9 +396,10 @@ def create_xai_classification():
             heatmaps=("xai_viz_classification_heatmaps", {}),
             heatmap_opacity=("xai_viz_heatmap_opacity",),
             heatmap_color_preset="BuRd",
-            heatmap_color_range=("[-1, 1]",),
-            heatmap_color_mode="custom",
+            heatmap_color_range=("xai_viz_heatmap_color_range", [-1, 1]),
+            heatmap_color_mode=("xai_viz_heatmap_color_mode",),
             heatmap_active=("xai_viz_classification_selected", "heatmap_0"),
+            color_range="[xai_viz_color_min, xai_viz_color_max] = $event",
         )
 
     return container
@@ -385,8 +416,8 @@ def create_xai_similarity():
             heatmaps=("xai_viz_similarity_heatmaps", {}),
             heatmap_opacity=("xai_viz_heatmap_opacity",),
             heatmap_color_preset="BuRd",
-            heatmap_color_range=("[-1, 1]",),
-            heatmap_color_mode="custom",
+            heatmap_color_range=("xai_viz_heatmap_color_range", [-1, 1]),
+            heatmap_color_mode=("xai_viz_heatmap_color_mode",),
             heatmap_active="heatmap_0",
             color_range="[xai_viz_color_min, xai_viz_color_max] = $event",
         )
@@ -413,8 +444,8 @@ def create_xai_detection():
             areas=("[]",),
             heatmaps=("xai_viz_detection_heatmaps", {}),
             heatmap_color_preset="BuRd",
-            heatmap_color_range=("[-1, 1]",),
-            heatmap_color_mode="custom",
+            heatmap_color_range=("xai_viz_heatmap_color_range", [-1, 1]),
+            heatmap_color_mode=("xai_viz_heatmap_color_mode",),
             heatmap_opacity=("xai_viz_heatmap_opacity",),
             heatmap_active=("xai_viz_detection_selected", "heatmap_0"),
             color_range="[xai_viz_color_min, xai_viz_color_max] = $event",
