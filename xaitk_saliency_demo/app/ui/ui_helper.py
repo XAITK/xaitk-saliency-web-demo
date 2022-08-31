@@ -360,8 +360,9 @@ def create_section_xai_execution(ctrl):
             classes="mx-2",
             **compact_styles,
         ):
-            for value, icon in options.HEAT_MAP_MODES:
+            for value, icon, show in options.HEAT_MAP_MODES:
                 with vuetify.VBtn(
+                    v_show=show,
                     icon=True,
                     value=value,
                     small=True,
@@ -400,6 +401,7 @@ def create_xai_classification():
             heatmap_color_mode=("xai_viz_heatmap_color_mode",),
             heatmap_active=("xai_viz_classification_selected", "heatmap_0"),
             color_range="[xai_viz_color_min, xai_viz_color_max] = $event",
+            full_range="full_range = $event",
         )
 
     return container
@@ -420,6 +422,7 @@ def create_xai_similarity():
             heatmap_color_mode=("xai_viz_heatmap_color_mode",),
             heatmap_active="heatmap_0",
             color_range="[xai_viz_color_min, xai_viz_color_max] = $event",
+            full_range="full_range = $event",
         )
 
     return container
@@ -449,6 +452,7 @@ def create_xai_detection():
             heatmap_opacity=("xai_viz_heatmap_opacity",),
             heatmap_active=("xai_viz_detection_selected", "heatmap_0"),
             color_range="[xai_viz_color_min, xai_viz_color_max] = $event",
+            full_range="full_range = $event",
         )
 
     return container

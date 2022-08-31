@@ -30,11 +30,12 @@ PROXIMITY_METRIC_AVAILABLE = [
     "yule",
 ]
 
+# https://github.com/Kitware/trame-components/blob/master/vue-components/src/components/XaiHeatMap/script.js#L47-L78
 HEAT_MAP_MODES = [
-    ("full", "mdi-arrow-left-right"),
-    ("maxSym", "mdi-arrow-expand-horizontal"),
-    ("minSym", "mdi-arrow-collapse-horizontal"),
-    ("negative", "mdi-ray-end-arrow"),
-    ("positive", "mdi-ray-start-arrow"),
-    ("custom", "mdi-account"),
+    ("full", "mdi-arrow-left-right", "true"),
+    ("maxSym", "mdi-arrow-expand-horizontal", "true"),
+    ("minSym", "mdi-arrow-collapse-horizontal", "full_range[0] < 0"),
+    ("negative", "mdi-ray-end-arrow", "full_range[0] < 0"),
+    ("positive", "mdi-ray-start-arrow", "full_range[1] > 0"),
+    ("custom", "mdi-account", "true"),
 ]

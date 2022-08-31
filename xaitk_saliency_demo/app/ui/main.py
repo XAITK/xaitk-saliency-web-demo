@@ -40,9 +40,26 @@ def initialize(server):
             "xai_param__stride": [20, 20],
             #
             "xai_viz_type": "",
+            #
+            "full_range": [-1, 1],
         }
     )
     server.state.client_only("xai_viz_heatmap_opacity")
+
+
+    # -----------------------------------------------------------------------------
+    # Computed variable for heatmap
+    # -----------------------------------------------------------------------------
+
+    @state.change("xai_viz_color_min", "xai_viz_color_max")
+    def xai_viz_color_range_change(xai_viz_color_min, xai_viz_color_max, **kwargs):
+        try:
+            state.xai_viz_heatmap_color_range = [
+                float(xai_viz_color_min),
+                float(xai_viz_color_max),
+            ]
+        except:
+            pass
 
     # -----------------------------------------------------------------------------
     # UI
