@@ -1,5 +1,6 @@
 from trame.app import get_server, jupyter
 from . import engine, ui
+from .engine.ml_models import update_ml_device
 
 
 def show(server=None, **kwargs):
@@ -28,6 +29,9 @@ def show(server=None, **kwargs):
 
     # Initilize app
     if new_server:
+        # Try to use GPU by default
+        update_ml_device(False)
+
         engine.initialize(server)
         ui.initialize(server)
 
