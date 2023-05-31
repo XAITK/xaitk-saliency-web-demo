@@ -36,6 +36,16 @@ def initialize(server):
                 else:
                     params[name] = convert(value)
 
+            # Handle rename to support different structure for conflicting names
+            for new_name, from_value in options.SALINECY_PARAM_REMAP.items():
+                if isinstance(from_value, (list, tuple)):
+                    result = []
+                    for name in from_value:
+                        result.append(params.pop(name))
+                    params[new_name] = result
+                else:
+                    params[new_name] = params.pop(from_value)
+
             ctrl.xai_set_saliency_method(state.saliency_active, params)
 
     def update_model_execution():

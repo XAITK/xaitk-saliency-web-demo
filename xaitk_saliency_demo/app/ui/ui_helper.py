@@ -261,6 +261,19 @@ def create_section_xai_parameters():
             v_model=("xai_param__s", 8),
             type="number",
         )
+        with vuetify.VRow(v_show=("xai_params_to_show.includes('s_tuple')",)):
+            vuetify.VTextField(
+                label="Spatial resolution of the small masking grid (x)",
+                v_model=("xai_param__s_tuple[0]",),
+                change="flushState('xai_param__s_tuple')",
+                type="number",
+            )
+            vuetify.VTextField(
+                label="Spatial resolution of the small masking grid (y)",
+                v_model=("xai_param__s_tuple[1]",),
+                change="flushState('xai_param__s_tuple')",
+                type="number",
+            )
         vuetify.VSlider(
             label="P1",
             persistent_hint=True,

@@ -38,6 +38,7 @@ def initialize(server):
             "xai_params_to_show": [],
             "xai_param__window_size": [50, 50],
             "xai_param__stride": [20, 20],
+            "xai_param__s_tuple": [8, 8],
             #
             "xai_viz_type": "",
             #
