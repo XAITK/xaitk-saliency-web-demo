@@ -20,7 +20,7 @@ TASK_DEPENDENCY = {
         "saliency_active": "DRISEStack",
         "saliency_available": [
             {"text": "DRISE", "value": "DRISEStack"},
-            {"text": "RandomGridStack", "value": "RandomGridStack"}
+            {"text": "RandomGridStack", "value": "RandomGridStack"},
         ],
         # Task => model
         "model_active": "DetectionFRCNN",

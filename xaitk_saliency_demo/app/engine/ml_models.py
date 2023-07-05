@@ -66,8 +66,8 @@ CENTERNET_RESNET50 = grabdata(
     fname="centernet-resnet50.pth",
     appname="xaitk-saliency-demo",
     hash_prefix="a0083ec55d46c420d06c414e5ecc1863d6ad9b6a1732acff5c9dba28158a4"
-                "c5a04f43541415d503fa776031a7329e3912864ae2348b3bee035df0d1e7a"
-                "cefa49"
+    "c5a04f43541415d503fa776031a7329e3912864ae2348b3bee035df0d1e7a"
+    "cefa49",
 )
 
 # -----------------------------------------------------------------------------
@@ -106,6 +106,7 @@ class AbstractModel:
 # -----------------------------------------------------------------------------
 # Classification
 # -----------------------------------------------------------------------------
+
 
 class ResNetPredict:
     @torch.no_grad()
@@ -202,6 +203,7 @@ class SimilarityVgg16(AbstractModel, ResNetPredict, SimilarityRun):
 # Detection
 # -----------------------------------------------------------------------------
 
+
 class DetectionPredict:
     def predict(self, input: np.ndarray) -> Tuple[np.ndarray, np.ndarray, List[str]]:
         """
@@ -257,7 +259,7 @@ class DetectionFRCNN(AbstractModel, DetectionPredict, DetectionRun):
     def __init__(self, server):
         d = DEVICE
         model = ResNetFRCNN(
-            use_cuda=True if 'cuda' in d.type.lower() else False,
+            use_cuda=True if "cuda" in d.type.lower() else False,
             cuda_device=d.type + (f":{d.index}" if d.index is not None else ""),
         )
         super().__init__(server, model)
@@ -270,7 +272,7 @@ class DetectionCenterNetVisdrone(AbstractModel, DetectionPredict, DetectionRun):
             arch="resnet50",
             model_file=CENTERNET_RESNET50,
             max_dets=500,
-            use_cuda=True if 'cuda' in d.type.lower() else False,
+            use_cuda=True if "cuda" in d.type.lower() else False,
         )
         super().__init__(server, model)
 

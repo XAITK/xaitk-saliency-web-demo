@@ -46,7 +46,6 @@ def initialize(server):
     )
     server.state.client_only("xai_viz_heatmap_opacity")
 
-
     # -----------------------------------------------------------------------------
     # Computed variable for heatmap
     # -----------------------------------------------------------------------------

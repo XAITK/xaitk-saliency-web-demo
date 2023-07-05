@@ -19,7 +19,9 @@ from xaitk_saliency.impls.gen_object_detector_blackbox_sal.drise import RandomGr
 
 # smqtk-*
 from smqtk_classifier import ClassifyImage
-from smqtk_descriptors.interfaces.image_descriptor_generator import ImageDescriptorGenerator
+from smqtk_descriptors.interfaces.image_descriptor_generator import (
+    ImageDescriptorGenerator,
+)
 from smqtk_detection import DetectImageObjects
 
 # labels
@@ -49,25 +51,15 @@ SALIENCY_TYPES = {
             "class": SlidingWindowStack,
         },
     },
-
     # Similarity
     "SBSMStack": {
         "_saliency": {
             "class": SBSMStack,
         }
     },
-
     # Object Detection
-    "DRISEStack": {
-        "_saliency": {
-            "class": DRISEStack
-        }
-    },
-    "RandomGridStack": {
-        "_saliency": {
-            "class": RandomGridStack
-        }
-    },
+    "DRISEStack": {"_saliency": {"class": DRISEStack}},
+    "RandomGridStack": {"_saliency": {"class": RandomGridStack}},
 }
 
 
@@ -95,12 +87,13 @@ class ClfModel(ClassifyImage):
 
 # SMQTK black-box descriptor generator
 class DescrModel(ImageDescriptorGenerator):
-
     def __init__(self, model):
         self.model = model
 
     @torch.no_grad()
-    def generate_arrays_from_images(self, img_mat_iter: Iterable[np.ndarray]) -> Iterable[np.ndarray]:
+    def generate_arrays_from_images(
+        self, img_mat_iter: Iterable[np.ndarray]
+    ) -> Iterable[np.ndarray]:
         for img in img_mat_iter:
             inp = imagenet_model_loader(img).unsqueeze(0).to(self.model.device)
             vec = self.model(inp).cpu().numpy().squeeze()
