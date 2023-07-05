@@ -1,4 +1,4 @@
-from trame.widgets import html, vuetify, vega, trame
+from trame.widgets import html, vuetify, plotly, trame
 
 from . import options
 
@@ -151,7 +151,7 @@ def create_section_model_execution(ctrl):
 
     with _content:
         # classes UI
-        _chart = vega.Figure(
+        _chart = plotly.Figure(
             style="width: calc(100% - 32px)",
             v_show=("task_active === 'classification'",),
         )

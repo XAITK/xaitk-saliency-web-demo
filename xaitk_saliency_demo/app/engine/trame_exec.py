@@ -1,5 +1,5 @@
 import pandas as pd
-import altair as alt
+import plotly.express as px
 
 from . import options
 from trame_client.encoders import numpy
@@ -51,17 +51,21 @@ def initialize(server):
         # classes
         classes = results.get("classes", [])
         df = pd.DataFrame(classes, columns=["Class", "Score"])
-        chart = (
-            alt.Chart(df)
-            .mark_bar()
-            .encode(
-                x=alt.X("Score", axis=alt.Axis(format="%", title=None)),
-                y=alt.Y("Class", axis=alt.Axis(title=None), sort="-x"),
-            )
-            .properties(width="container", height=145)
-        )
 
+        chart = px.bar(df, x="Score", y="Class")
         ctrl.classification_chart_update(chart)
+
+        # chart = (
+        #     alt.Chart(df)
+        #     .mark_bar()
+        #     .encode(
+        #         x=alt.X("Score", axis=alt.Axis(format="%", title=None)),
+        #         y=alt.Y("Class", axis=alt.Axis(title=None), sort="-x"),
+        #     )
+        #     .properties(width="container", height=145)
+        # )
+
+        # ctrl.classification_chart_update(chart)
         state.xai_viz_classification_selected = "heatmap_0"
         state.xai_viz_classification_selected_available = list(
             map(
