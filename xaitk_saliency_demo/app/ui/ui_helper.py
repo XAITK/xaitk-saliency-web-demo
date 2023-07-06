@@ -152,8 +152,9 @@ def create_section_model_execution(ctrl):
     with _content:
         # classes UI
         _chart = plotly.Figure(
-            style="width: calc(100% - 32px)",
+            style="width: 100%; height: 100%;",
             v_show=("task_active === 'classification'",),
+            display_mode_bar=False,
         )
         ctrl.classification_chart_update = _chart.update
 

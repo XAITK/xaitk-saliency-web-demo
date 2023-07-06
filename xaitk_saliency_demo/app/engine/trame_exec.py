@@ -51,21 +51,18 @@ def initialize(server):
         # classes
         classes = results.get("classes", [])
         df = pd.DataFrame(classes, columns=["Class", "Score"])
+        df.sort_values("Score", ascending=True, inplace=True)
 
         chart = px.bar(df, x="Score", y="Class")
+        chart.update_layout(
+            xaxis_title="",
+            yaxis_title="",
+            showlegend=False,
+            margin=dict(b=0, l=0, r=0, t=0),
+            height=192,
+        )
         ctrl.classification_chart_update(chart)
 
-        # chart = (
-        #     alt.Chart(df)
-        #     .mark_bar()
-        #     .encode(
-        #         x=alt.X("Score", axis=alt.Axis(format="%", title=None)),
-        #         y=alt.Y("Class", axis=alt.Axis(title=None), sort="-x"),
-        #     )
-        #     .properties(width="container", height=145)
-        # )
-
-        # ctrl.classification_chart_update(chart)
         state.xai_viz_classification_selected = "heatmap_0"
         state.xai_viz_classification_selected_available = list(
             map(
