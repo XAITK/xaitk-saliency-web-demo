@@ -94,7 +94,7 @@ def initialize(server):
                 **ui_helper.combo_styles,
             )
             vuetify.VSelect(
-                v_show=("task_active == 'classification'",),
+                v_show=("['classification', 'detection'].includes(task_active)",),
                 label="Top classes",
                 v_model=("TOP_K", 5),
                 items=("TOP_K_available", list(range(5, 11))),
