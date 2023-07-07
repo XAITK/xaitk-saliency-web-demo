@@ -55,7 +55,7 @@ SALIENCY_PARAMS = {
     "SBSMStack": ["window_size", "stride", "proximity_metric", "threads"],
     # detection
     "DRISEStack": ["n", "s", "p1", "seed", "threads"],
-    "RandomGridStack": ["n", "s", "p1", "seed", "threads"],
+    "RandomGridStack": ["n", "s_tuple", "p1", "seed", "threads"],
     # classification
     "RISEStack": ["n", "s", "p1", "seed", "threads", "debiased"],
     "SlidingWindowStack": ["window_size", "stride", "threads"],
@@ -66,9 +66,12 @@ ALL_SALIENCY_PARAMS = {
     "stride": int,
     "n": int,
     "s": int,
+    "s_tuple": int,
     "p1": float,
     "seed": int,
     "threads": int,
     "proximity_metric": str,
     "debiased": bool,
 }
+
+SALINECY_PARAM_REMAP = {"s": "s_tuple"}

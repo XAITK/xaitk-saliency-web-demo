@@ -182,8 +182,8 @@ def create_section_model_execution(ctrl):
                 area_style=("{ 'stroke-width': 3, rx: 10 }",),
             )
             with vuetify.VRow(
-                classes="flex-shrink-1 justify-start align-start no-gutters",
-                style="width: 25px;",
+                classes="d-flex flex-shrink-1 align-content-start flex-wrap no-gutters",
+                style="width: 25px; height: 100%;",
             ):
                 with vuetify.VSheet(
                     v_for=("item, idx in model_viz_detection_areas",),
@@ -261,6 +261,25 @@ def create_section_xai_parameters():
             v_model=("xai_param__s", 8),
             type="number",
         )
+        with vuetify.VCol(v_show=("xai_params_to_show.includes('s_tuple')",)):
+            vuetify.VRow(
+                "Spatial resolution of the small masking grid (x, y)",
+                classes="text-caption text--secondary",
+                style="line-height: 20px; height: 20px; letter-spacing: normal !important;",
+            )
+            with vuetify.VRow(classes="mt-0 pt-0"):
+                vuetify.VTextField(
+                    v_model_number=("xai_param__s_tuple[0]",),
+                    change="flushState('xai_param__s_tuple')",
+                    type="number",
+                    classes="mr-1 pt-1",
+                )
+                vuetify.VTextField(
+                    v_model_number=("xai_param__s_tuple[1]",),
+                    change="flushState('xai_param__s_tuple')",
+                    type="number",
+                    classes="ml-1 pt-1",
+                )
         vuetify.VSlider(
             label="P1",
             persistent_hint=True,
