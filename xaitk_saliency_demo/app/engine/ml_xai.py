@@ -117,7 +117,7 @@ class Saliency:
             constructor = value.get("class")
             param_keys = value.get("params", params.keys())
             kwargs = {k: params[k] for k in param_keys}
-            print(f"XAI ran with {kwargs}")
+            logger.info(f"XAI ran with {kwargs}")
             setattr(self, key, constructor(**kwargs))
 
 
