@@ -116,7 +116,9 @@ class Saliency:
         for key, value in kv_pairs:
             constructor = value.get("class")
             param_keys = value.get("params", params.keys())
-            setattr(self, key, constructor(**{k: params[k] for k in param_keys}))
+            kwargs = {k: params[k] for k in param_keys}
+            print(f"XAI ran with {kwargs}")
+            setattr(self, key, constructor(**kwargs))
 
 
 class ClassificationSaliency(Saliency):
