@@ -1,2 +1,12 @@
 trame:
-  app: xaitk_saliency_demo.app.main
+  cmd:
+    - python
+    - -m
+    - xaitk_saliency_demo.app.main
+    - --host
+    - 127.0.0.1
+    - --port
+    - ${port}
+    - --authKey
+    - ${secret}
+    - --server
