@@ -53,3 +53,9 @@ Run the application
   :width: 20%
 .. |image_4| image:: gallery/xaitk-similarity-1.jpg
   :width: 20%
+
+
+Contribute
+----------
+
+Commit messages needs to follow semantic-release expectation.
