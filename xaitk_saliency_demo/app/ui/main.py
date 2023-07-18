@@ -58,7 +58,7 @@ def initialize(server):
                 float(xai_viz_color_min),
                 float(xai_viz_color_max),
             ]
-        except:
+        except Exception:
             pass
 
     # -----------------------------------------------------------------------------

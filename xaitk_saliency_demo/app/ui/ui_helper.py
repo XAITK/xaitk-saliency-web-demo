@@ -67,7 +67,6 @@ def create_section_input():
         style=("{ width: `${2 * 216 + 8}px`}",),
     )
     _content.style = "min-height: 224px;"
-    _file = ""
 
     with _header:
         _header.add_child("Data Selection")

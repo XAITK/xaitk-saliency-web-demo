@@ -6,8 +6,8 @@ from scipy.special import softmax
 import torch
 
 # xaitk-saliency
-from xaitk_saliency.impls.perturb_image.rise import RISEGrid
-from xaitk_saliency.impls.gen_detector_prop_sal.drise_scoring import DRISEScoring
+# from xaitk_saliency.impls.perturb_image.rise import RISEGrid
+# from xaitk_saliency.impls.gen_detector_prop_sal.drise_scoring import DRISEScoring
 
 from xaitk_saliency.impls.gen_image_similarity_blackbox_sal.sbsm import SBSMStack
 from xaitk_saliency.impls.gen_image_classifier_blackbox_sal.rise import RISEStack

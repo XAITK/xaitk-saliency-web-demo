@@ -27,7 +27,7 @@ def show(server=None, **kwargs):
     engine_logger = logging.getLogger("xaitks_saliency_demo")
     engine_logger.setLevel(logging.ERROR)
 
-    # Initilize app
+    # Initialize app
     if new_server:
         # Try to use GPU by default
         update_ml_device(False)
