@@ -58,4 +58,4 @@ Run the application
 Contribute
 ----------
 
-Commit messages needs to follow semantic-release expectation.
+Commit messages needs to follow `semantic-release <https://github.com/semantic-release/semantic-release>`_ expectation.
