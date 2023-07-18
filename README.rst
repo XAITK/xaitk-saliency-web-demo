@@ -65,3 +65,13 @@ Commit messages needs to follow `semantic-release <https://github.com/semantic-r
 - **ci/chore/docs** will not trigger a release
 
 Then to move to +1.0.0 you need to add a **BREAKING CHANGE: xyz** after the body of the commit message.  
+
+Docker image
+------------
+
+For each commit to master the CI will push a new **kitware/trame:xaitk** image to dockerhub.
+Such image can be ran locally using the following command line.
+
+.. code-block:: console
+
+    docker run -it --rm --gpus all -p 8080:80 kitware/trame:xaitk
