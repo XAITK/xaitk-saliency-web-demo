@@ -84,6 +84,7 @@ jobs:
         run: npx commitlint --from=${{ github.event.pull_request.base.sha }}
 
   release:
+    branches: [ main ]
     needs: [pre-commit, check-and-lint]
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
