@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.2.0 (2023-07-19)
+
+### Feature
+
+* **ci:** Version catch up 2.2.0 ([`9b48bc4`](https://github.com/XAITK/xaitk-saliency-web-demo/commit/9b48bc4790b711c550bcd3c3dd823885459bc648))
+
 ## v2.1.0 (2023-07-19)
 
 ### Feature
