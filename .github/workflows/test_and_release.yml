@@ -2,9 +2,9 @@ name: Test and Release
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   pre-commit:
@@ -84,7 +84,6 @@ jobs:
         run: npx commitlint --from=${{ github.event.pull_request.base.sha }}
 
   release:
-    branches: [ main ]
     needs: [pre-commit, check-and-lint]
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
