@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.2.1 (2023-07-19)
+
+### Fix
+
+* **release:** Auto publish releases ([`ba5a09e`](https://github.com/XAITK/xaitk-saliency-web-demo/commit/ba5a09e2ee2548686823370c044b7d9cda07bc08))
+
 ## v2.2.0 (2023-07-19)
 
 ### Feature
