@@ -75,3 +75,4 @@ Such image can be ran locally using the following command line.
 .. code-block:: console
 
     docker run -it --rm --gpus all -p 8080:80 kitware/trame:xaitk
+
