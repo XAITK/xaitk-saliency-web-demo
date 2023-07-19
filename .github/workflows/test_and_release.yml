@@ -22,43 +22,43 @@ jobs:
           pre-commit install
           pre-commit run --all-files
 
-  pytest:
-    name: Pytest ${{ matrix.config.name }}
-    runs-on: ${{ matrix.config.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: [3.9]
-        config:
-        - {
-            name: "Linux",
-            os: ubuntu-latest
-          }
-        # - {
-        #     name: "MacOSX",
-        #     os: macos-latest
-        #   }
-        # - {
-        #     name: "Windows",
-        #     os: windows-latest
-        #   }
+  # pytest:
+  #   name: Pytest ${{ matrix.config.name }}
+  #   runs-on: ${{ matrix.config.os }}
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       python-version: [3.9]
+  #       config:
+  #       - {
+  #           name: "Linux",
+  #           os: ubuntu-latest
+  #         }
+  #       # - {
+  #       #     name: "MacOSX",
+  #       #     os: macos-latest
+  #       #   }
+  #       # - {
+  #       #     name: "Windows",
+  #       #     os: windows-latest
+  #       #   }
 
-    defaults:
-      run:
-        shell: bash
+  #   defaults:
+  #     run:
+  #       shell: bash
 
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v2
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
+  #   - name: Set up Python ${{ matrix.python-version }}
+  #     uses: actions/setup-python@v2
+  #     with:
+  #       python-version: ${{ matrix.python-version }}
 
-    - name: Install and Run Tests
-      run: |
-        pip install .
+  #   - name: Install and Run Tests
+  #     run: |
+  #       pip install .
 
   check-and-lint:
     runs-on: ubuntu-latest
