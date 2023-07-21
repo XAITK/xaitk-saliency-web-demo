@@ -20,3 +20,11 @@ Tips
 
 Commit messages
 ###############
+
+Commit messages needs to follow `semantic-release <https://github.com/semantic-release/semantic-release>`_ expectation.
+
+- **fix(scope): summary** will trigger a +0.0.1 version
+- **feat(scope): summary** will trigger a +0.1.0 version bump
+- **ci/chore/docs** will not trigger a release
+
+Then to move to +1.0.0 you need to add a **BREAKING CHANGE: what to worry about** after the body of the commit message.
