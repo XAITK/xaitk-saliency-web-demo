@@ -11,6 +11,9 @@ def main(server=None, **kwargs):
     if isinstance(server, str):
         server = get_server(server)
 
+    # Fix version of vue
+    server.client_type = "vue2"
+
     # CLI
     server.cli.add_argument(
         "--cpu",
