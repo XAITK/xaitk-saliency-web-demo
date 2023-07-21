@@ -17,3 +17,6 @@ Tips
 #. Sometimes, ``black`` and ``flake8`` do not agree. Add options to your ``.flake8`` file to fix these things. See the `flake8 configuration docs <https://flake8.pycqa.org/en/latest/user/configuration.html>`_ for more details.
 #. A quick way to fix ``codespell`` issues is by installing codespell (``pip install codespell``) and running the ``codespell -w`` command at the root of your directory.
 #. The `.codespellrc file <https://github.com/codespell-project/codespell#using-a-config-file>`_ can be used fix any other codespell issues, such as ignoring certain files, directories, words, or regular expressions.
+
+Commit messages
+###############

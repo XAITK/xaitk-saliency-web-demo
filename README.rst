@@ -2,69 +2,58 @@
 XAITK Saliency Demo
 ===================
 
-Web application demonstrating XAITK Saliency functionality
+XAITK Saliency functionality demonstration via an interactive Web UI that can run locally, in jupyter or in the cloud.
+A docker image is available for cloud deployment or local testing (``kitware/trame:xaitk``).
+This application has been mainly tested on Linux but should work everywhere assuming all the dependencies manage to install on your system.
 
-* Free software: BSD License
-* Created using template from `trame-cookiecutter <https://github.com/Kitware/trame-cookiecutter>`_
+|image_1| |image_2| |image_3| |image_4|
+
+.. |image_1| image:: https://raw.githubusercontent.com/XAITK/xaitk-saliency-web-demo/master/gallery/xaitk-classification-rise-4.jpg
+  :width: 20%
+.. |image_2| image:: https://raw.githubusercontent.com/XAITK/xaitk-saliency-web-demo/master/gallery/xaitk-classification-sliding-window.jpg
+  :width: 20%
+.. |image_3| image:: https://raw.githubusercontent.com/XAITK/xaitk-saliency-web-demo/master/gallery/xaitk-detection-retina.jpg
+  :width: 20%
+.. |image_4| image:: https://raw.githubusercontent.com/XAITK/xaitk-saliency-web-demo/master/gallery/xaitk-similarity-1.jpg
+  :width: 20%
+
+
+License
+-------
+
+This application is provided under the BSD Open Source License.
 
 
 Installing
 ----------
 
-It is recommended to use conda to properly install the various ML packages.
-
-macOS conda setup
-^^^^^^^^^^^^^^^^^
+On Linux, ``pip`` is enough to install this Python library.
 
 .. code-block:: console
 
-    brew install miniforge
-    conda init zsh
+    python3.9 -m venv .venv
+    source .venv/bin/activate
+    pip install -U pip xaitk-saliency-demo
 
-venv creation for AI
-^^^^^^^^^^^^^^^^^^^^
-
-.. code-block:: console
-
-    conda create --name xaitk python=3.9 -y
-    conda activate xaitk
-
-    # For development when inside repo
-    pip install -e .
-
-    # For testing (no need to clone repo)
-    pip install xaitk-saliency-demo
-
-Run the application
+Then from that virtual-environment you can run the application like below
 
 .. code-block:: console
 
-    conda activate xaitk
+    # Executable
     xaitk-saliency-demo
 
+    # Module approach
+    python -m xaitk_saliency_demo.app
 
-|image_1| |image_2| |image_3| |image_4|
+Within Jupyter you can do the following
 
-.. |image_1| image:: gallery/xaitk-classification-rise-4.jpg
-  :width: 20%
-.. |image_2| image:: gallery/xaitk-classification-sliding-window.jpg
-  :width: 20%
-.. |image_3| image:: gallery/xaitk-detection-retina.jpg
-  :width: 20%
-.. |image_4| image:: gallery/xaitk-similarity-1.jpg
-  :width: 20%
+.. code-block:: console
+
+    from xaitk_saliency_demo.app.jupyter import show
+    show()
 
 
-Contribute
-----------
 
-Commit messages needs to follow `semantic-release <https://github.com/semantic-release/semantic-release>`_ expectation.
-
-- **fix(scope): summary** will trigger a +0.0.1 version
-- **feat(scope): summary** will trigger a +0.1.0 version bump
-- **ci/chore/docs** will not trigger a release
-
-Then to move to +1.0.0 you need to add a **BREAKING CHANGE: xyz** after the body of the commit message.  
 
 Docker image
 ------------
