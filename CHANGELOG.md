@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.2.2 (2023-07-21)
+
+### Fix
+
+* **trame:** Update code to support trame v3 ([`768bdde`](https://github.com/XAITK/xaitk-saliency-web-demo/commit/768bdded62ce222219995ddc8393cef384be5624))
+
 ## v2.2.1 (2023-07-19)
 
 ### Fix
