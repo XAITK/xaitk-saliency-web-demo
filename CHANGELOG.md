@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.2.3 (2023-07-21)
+
+### Fix
+
+* **main:** Add -m option ([`1aef674`](https://github.com/XAITK/xaitk-saliency-web-demo/commit/1aef67432d1f42e4f46399554b653077268e0fa6))
+
 ## v2.2.2 (2023-07-21)
 
 ### Fix
