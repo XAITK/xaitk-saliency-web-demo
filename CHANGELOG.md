@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v2.3.0 (2023-08-03)
+
+### Feature
+
+* **jupyter:** Code cleanup + better jupyter support ([`d1f24a1`](https://github.com/XAITK/xaitk-saliency-web-demo/commit/d1f24a16386981109c57bea80269006a160be3d1))
+
+### Documentation
+
+* **contributing:** Add commit message format info ([`cdb228a`](https://github.com/XAITK/xaitk-saliency-web-demo/commit/cdb228a146a1da24aec7cd408f6f037d9b29f969))
+
 ## v2.2.3 (2023-07-21)
 
 ### Fix
