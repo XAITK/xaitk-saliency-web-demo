@@ -1,6 +1,6 @@
 from trame.app import get_server
-from . import engine, ui
-from .engine.ml_models import update_ml_device
+from .core import XaitkSaliency
+from .ml.models import update_ml_device
 
 
 def main(server=None, **kwargs):
@@ -10,9 +10,6 @@ def main(server=None, **kwargs):
 
     if isinstance(server, str):
         server = get_server(server)
-
-    # Fix version of vue
-    server.client_type = "vue2"
 
     # CLI
     server.cli.add_argument(
@@ -24,8 +21,7 @@ def main(server=None, **kwargs):
     update_ml_device(server.cli.parse_known_args()[0].cpu)
 
     # Init application
-    engine.initialize(server)
-    ui.initialize(server)
+    XaitkSaliency(server)
 
     # Start server
     server.start(**kwargs)

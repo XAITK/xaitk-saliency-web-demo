@@ -1,4 +1,4 @@
 [codespell]
-skip = **/package-lock.json,*.vti,PKG-INFO,**/dist/**,xaitk_saliency_demo/app/engine/assets/imagenet_classes.txt
+skip = **/package-lock.json,*.vti,PKG-INFO,**/dist/**,xaitk_saliency_demo/app/ml/assets/imagenet_classes.txt
 ignore-words-list = hist
 ignore-regex = name="ba"

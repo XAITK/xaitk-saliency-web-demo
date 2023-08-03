@@ -1,39 +1,28 @@
-from trame.app import get_server, jupyter
-from . import engine, ui
-from .engine.ml_models import update_ml_device
+import os
+import logging
+
+from .core import XaitkSaliency
+from .ml.models import update_ml_device
 
 
-def show(server=None, **kwargs):
-    """Run and display the trame application in jupyter's event loop
-    The kwargs are forwarded to IPython.display.IFrame()
-    """
-    new_server = False
-    if server is None:
-        server = get_server(create_if_missing=False)
-        if server is None:
-            new_server = True
-            server = get_server()
+def jupyter_hub_url_builder(base_url, port, template_name):
+    return f"{os.environ['JUPYTERHUB_SERVICE_PREFIX']}/proxy/{port}/index.html?ui={template_name[16:]}&reconnect=auto"
 
-    if isinstance(server, str):
-        server_name = server
-        server = get_server(server_name, create_if_missing=False)
-        if server is None:
-            new_server = True
-            server = get_server(server_name)
 
+async def create_app(server=None):
     # Disable logging
-    import logging
-
     engine_logger = logging.getLogger("xaitks_saliency_demo")
     engine_logger.setLevel(logging.ERROR)
 
-    # Initialize app
-    if new_server:
-        # Try to use GPU by default
-        update_ml_device(False)
+    # Use GPU for ML if available
+    update_ml_device(False)
 
-        engine.initialize(server)
-        ui.initialize(server)
+    # Create app
+    app = XaitkSaliency(server)
+    if os.environ.get("JUPYTERHUB_SERVICE_PREFIX"):
+        app.gui.iframe_url_builder = jupyter_hub_url_builder
 
-    # Show as cell result
-    jupyter.show(server, **kwargs)
+    # Start server and wait for it to be ready
+    await app.gui.ready
+
+    return app
