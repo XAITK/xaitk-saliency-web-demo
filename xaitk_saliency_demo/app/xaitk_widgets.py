@@ -59,15 +59,6 @@ class InputImage(html.Div):
             )
 
 
-def create_card_container(**kwargs):
-    with vuetify.VCard(**kwargs) as _card:
-        _header = vuetify.VCardTitle()
-        vuetify.VDivider()
-        _content = vuetify.VCardText()
-
-    return _card, _header, _content
-
-
 # -----------------------------------------------------------------------------
 # Section builders
 #
@@ -173,7 +164,7 @@ class ModelExecutionSection(CardContainer):
             # classes UI
             _chart = plotly.Figure(
                 style="width: 100%; height: 100%;",
-                v_show=("task_active === 'classification'",),
+                v_show=("task_active === 'classification' && !input_needed",),
                 display_mode_bar=False,
             )
             ctrl.classification_chart_update = _chart.update
@@ -181,7 +172,7 @@ class ModelExecutionSection(CardContainer):
             # similarity UI
             vuetify.VProgressCircular(
                 "{{ Math.round(model_viz_similarity) }} %",
-                v_show=("task_active === 'similarity'",),
+                v_show=("task_active === 'similarity' && !input_needed",),
                 size=192,
                 width=15,
                 color="teal",
@@ -189,7 +180,9 @@ class ModelExecutionSection(CardContainer):
             )
 
             # object detection UI
-            with vuetify.VRow(v_show=("task_active === 'detection'",), align="center"):
+            with vuetify.VRow(
+                v_show=("task_active === 'detection' && !input_needed",), align="center"
+            ):
                 trame.XaiImage(
                     classes="ma-2",
                     src=("input_1_img_url",),
@@ -415,12 +408,14 @@ class XaiClassificationResults(html.Div):
         )
         with self:
             vuetify.VSelect(
+                v_show=("xai_ready", False),
                 v_model=("xai_viz_classification_selected",),
                 items=("xai_viz_classification_selected_available", []),
                 **config.STYLE_COMPACT,
                 classes="mb-2",
             )
             trame.XaiImage(
+                v_show=("xai_ready", False),
                 v_if=("input_1_img_url",),
                 src=("input_1_img_url",),
                 max_height=400,
@@ -438,9 +433,12 @@ class XaiClassificationResults(html.Div):
 
 class XaiSimilarityResults(html.Div):
     def __init__(self):
-        super().__init__(v_if=("xai_viz_type == 'similarity'",))
+        super().__init__(
+            v_if="xai_viz_type == 'similarity'",
+        )
         with self:
             trame.XaiImage(
+                v_show=("xai_ready", False),
                 v_if=("input_2_img_url",),
                 src=("input_1_img_url",),
                 max_height=400,
@@ -459,10 +457,12 @@ class XaiSimilarityResults(html.Div):
 class XaiDetectionResults(html.Div):
     def __init__(self):
         super().__init__(
-            v_if=("xai_viz_type == 'detection'",), classes="d-flex flex-column"
+            v_if="xai_viz_type == 'detection'",
+            classes="d-flex flex-column",
         )
         with self:
             vuetify.VSelect(
+                v_show=("xai_ready", False),
                 v_model=("xai_viz_detection_selected",),
                 items=("model_viz_detection_areas", []),
                 change="model_viz_detection_area_actives = [1 + Number(xai_viz_detection_selected.split('_')[1])]",
@@ -470,6 +470,7 @@ class XaiDetectionResults(html.Div):
                 classes="mb-2",
             )
             trame.XaiImage(
+                v_show=("xai_ready", False),
                 v_if=("input_1_img_url",),
                 src=("input_1_img_url",),
                 max_height=400,

@@ -10,6 +10,7 @@ from . import config, xaitk_widgets
 from .ml.models import get_model
 from .ml.xai import get_saliency
 
+from trame.decorators import TrameApp, change, life_cycle
 from trame.app import get_server
 from trame_client.encoders import numpy
 from trame.ui.vuetify import SinglePageLayout
@@ -18,6 +19,7 @@ from trame.widgets import vuetify
 logger = logging.getLogger("xaitks_saliency_demo")
 
 
+@TrameApp()
 class XaitkSaliency:
     def __init__(self, server):
         if server is None:
@@ -58,24 +60,6 @@ class XaitkSaliency:
             }
         )
         self.state.client_only("xai_viz_heatmap_opacity")
-
-        # Bind method to controller
-        self.ctrl.on_server_ready.add(self.on_ready)
-
-        # Bind state change
-        self.state.change("task_active")(self.on_task_change)
-        self.state.change("model_active")(self.on_model_change)
-        self.state.change("TOP_K")(self.on_nb_class_change)
-        self.state.change("saliency_active")(self.on_xai_algo_change)
-        self.state.change("input_file")(self.on_input_file_change)
-        self.state.change("input_1_img_url", "input_2_img_url")(self.reset_image)
-        self.state.change(
-            *[f"xai_param__{k}" for k in config.ALL_SALIENCY_PARAMS.keys()]
-        )(self.on_saliency_param_update)
-
-        self.state.change("xai_viz_color_min", "xai_viz_color_max")(
-            self.xai_viz_color_range_change
-        )
 
         # Build GUI
         self.ui()
@@ -135,12 +119,14 @@ class XaitkSaliency:
 
         # Create saliency and run it
         xaitk = get_saliency(self._task, self._model, **self._xaitk_config)
+        self.state.xai_ready = True
         return xaitk.run(self._image_1, self._image_2)
 
     # -----------------------------------------------------
     # Exec API
     # -----------------------------------------------------
 
+    @life_cycle.server_ready
     def on_ready(self, task_active, **kwargs):
         """Executed only once when application start"""
         logger.info("on_ready", task_active)
@@ -181,6 +167,11 @@ class XaitkSaliency:
         -> btn press in model section
         -> state.change(TOP_K, input_file, model_active)
         """
+
+        # We don't have input to deal with
+        if not self.state.input_1_img_url:
+            return
+
         results = {}
 
         if self.can_run():
@@ -284,22 +275,25 @@ class XaitkSaliency:
         self.state.model_viz_detection_areas = []
 
     def reset_all(self):
+        self.state.xai_ready = False
         self.state.input_needed = True
         self.state.input_1_img_url = None
         self.state.input_2_img_url = None
         self.reset_model_execution()
 
+    @change("task_active")
     def on_task_change(self, task_active, **kwargs):
         # Use static dependency to update state values
         if task_active in config.TASK_DEPENDENCY:
             for key, value in config.TASK_DEPENDENCY[task_active].items():
                 self.state[key] = value
 
+        self.set_task(task_active)
+
         # New task => clear UI content
         self.reset_all()
 
-        self.set_task(task_active)
-
+    @change("model_active")
     def on_model_change(self, model_active, **kwargs):
         if model_active:
             logger.info("set model to", model_active)
@@ -307,15 +301,18 @@ class XaitkSaliency:
             self.reset_model_execution()
             self.update_model_execution()
 
+    @change("TOP_K")
     def on_nb_class_change(self, **kwargs):
         self.update_model_execution()
 
+    @change("saliency_active")
     def on_xai_algo_change(self, saliency_active, **kwargs):
         if saliency_active in config.SALIENCY_PARAMS:
             # Show/hide parameters relevant to current algo
             self.state.xai_params_to_show = config.SALIENCY_PARAMS[saliency_active]
             self.update_active_xai_algorithm()
 
+    @change("input_file")
     def on_input_file_change(
         self, input_file, input_1_img_url, input_2_img_url, input_expected, **kwargs
     ):
@@ -337,6 +334,7 @@ class XaitkSaliency:
             self.set_image_2(input_file.get("content"))
             self.update_model_execution()
 
+    @change("input_1_img_url", "input_2_img_url")
     def reset_image(self, input_1_img_url, input_2_img_url, input_expected, **kwargs):
         """Method called when input_x_img_url is changed which can happen when setting them but also when cleared on the client side"""
         count = 0
@@ -348,9 +346,11 @@ class XaitkSaliency:
         # Hide button if we have all the inputs we need
         self.state.input_needed = count < input_expected
 
+    @change(*[f"xai_param__{k}" for k in config.ALL_SALIENCY_PARAMS.keys()])
     def on_saliency_param_update(self, **kwargs):
         self.update_active_xai_algorithm()
 
+    @change("xai_viz_color_min", "xai_viz_color_max")
     def xai_viz_color_range_change(
         self, xai_viz_color_min, xai_viz_color_max, **kwargs
     ):
