@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.3.1 (2023-08-04)
+
+### Fix
+
+* **reset:** Properly reset state on task change ([`90d7ba0`](https://github.com/XAITK/xaitk-saliency-web-demo/commit/90d7ba044fc9e64274aba2b3b0c8a3fd37645376))
+
 ## v2.3.0 (2023-08-03)
 
 ### Feature
