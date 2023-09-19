@@ -3,14 +3,14 @@ TASK_DEPENDENCY = {
         # Task => saliency
         "saliency_active": "SBSMStack",
         "saliency_available": [
-            {"text": "SBSM", "value": "SBSMStack"},
+            {"title": "SBSM", "value": "SBSMStack"},
         ],
         # Task => model
         "model_active": "SimilarityResNet50",
         "model_available": [
-            {"text": "ResNet-50", "value": "SimilarityResNet50"},
-            {"text": "AlexNet", "value": "SimilarityAlexNet"},
-            {"text": "VGG-16", "value": "SimilarityVgg16"},
+            {"title": "ResNet-50", "value": "SimilarityResNet50"},
+            {"title": "AlexNet", "value": "SimilarityAlexNet"},
+            {"title": "VGG-16", "value": "SimilarityVgg16"},
         ],
         # Task => input
         "input_expected": 2,
@@ -19,14 +19,14 @@ TASK_DEPENDENCY = {
         # Task => saliency
         "saliency_active": "DRISEStack",
         "saliency_available": [
-            {"text": "DRISE", "value": "DRISEStack"},
-            {"text": "RandomGridStack", "value": "RandomGridStack"},
+            {"title": "DRISE", "value": "DRISEStack"},
+            {"title": "RandomGridStack", "value": "RandomGridStack"},
         ],
         # Task => model
         "model_active": "DetectionFRCNN",
         "model_available": [
-            {"text": "FRCNN (COCO)", "value": "DetectionFRCNN"},
-            {"text": "CenterNet (VisDrone)", "value": "DetectionCenterNetVisdrone"},
+            {"title": "FRCNN (COCO)", "value": "DetectionFRCNN"},
+            {"title": "CenterNet (VisDrone)", "value": "DetectionCenterNetVisdrone"},
         ],
         # Task => input
         "input_expected": 1,
@@ -35,15 +35,15 @@ TASK_DEPENDENCY = {
         # Task => saliency
         "saliency_active": "RISEStack",
         "saliency_available": [
-            {"text": "RISE Stack", "value": "RISEStack"},
-            {"text": "Sliding Window Stack", "value": "SlidingWindowStack"},
+            {"title": "RISE Stack", "value": "RISEStack"},
+            {"title": "Sliding Window Stack", "value": "SlidingWindowStack"},
         ],
         # Task => model
         "model_active": "ClassificationResNet50",
         "model_available": [
-            {"text": "ResNet-50", "value": "ClassificationResNet50"},
-            {"text": "AlexNet", "value": "ClassificationAlexNet"},
-            {"text": "VGG-16", "value": "ClassificationVgg16"},
+            {"title": "ResNet-50", "value": "ClassificationResNet50"},
+            {"title": "AlexNet", "value": "ClassificationAlexNet"},
+            {"title": "VGG-16", "value": "ClassificationVgg16"},
         ],
         # Task => input
         "input_expected": 1,
@@ -77,9 +77,9 @@ ALL_SALIENCY_PARAMS = {
 SALINECY_PARAM_REMAP = {"s": "s_tuple"}
 
 TASKS = [
-    {"text": "Image Similarity", "value": "similarity"},
-    {"text": "Object Detection", "value": "detection"},
-    {"text": "Image Classification", "value": "classification"},
+    {"title": "Image Similarity", "value": "similarity"},
+    {"title": "Object Detection", "value": "detection"},
+    {"title": "Image Classification", "value": "classification"},
 ]
 
 PROXIMITY_METRIC_AVAILABLE = [
@@ -119,6 +119,6 @@ HEAT_MAP_MODES = [
 ]
 
 # Common css style
-STYLE_COMPACT = dict(hide_details=True, dense=True)
+STYLE_COMPACT = dict(hide_details=True, density="compact", variant="underlined")
 STYLE_SELECT = dict(style="max-width: 200px", classes="mx-2")
 STYLE_ROW = dict(style="min-width: 0;", classes="d-flex flex-shrink-1")

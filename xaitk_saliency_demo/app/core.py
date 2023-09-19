@@ -13,8 +13,8 @@ from .ml.xai import get_saliency
 from trame.decorators import TrameApp, change, life_cycle
 from trame.app import get_server
 from trame_client.encoders import numpy
-from trame.ui.vuetify import SinglePageLayout
-from trame.widgets import vuetify
+from trame.ui.vuetify3 import SinglePageLayout
+from trame.widgets import vuetify3 as vuetify
 
 logger = logging.getLogger("xaitks_saliency_demo")
 
@@ -37,7 +37,7 @@ class XaitkSaliency:
         self._layout = None
 
         # Fix version of vue
-        server.client_type = "vue2"
+        server.client_type = "vue3"
 
         # State defaults
         self.state.setdefault("input_expected", 1)
@@ -182,13 +182,13 @@ class XaitkSaliency:
         df = pd.DataFrame(classes, columns=["Class", "Score"])
         df.sort_values("Score", ascending=True, inplace=True)
 
-        chart = px.bar(df, x="Score", y="Class")
+        chart = px.bar(df, x="Score", y="Class", template="simple_white")
         chart.update_layout(
             xaxis_title="",
             yaxis_title="",
             showlegend=False,
             margin=dict(b=0, l=0, r=0, t=0),
-            height=192,
+            height=200,
         )
         self.ctrl.classification_chart_update(chart)
 
@@ -197,6 +197,7 @@ class XaitkSaliency:
             map(
                 lambda t: {
                     "text": t[1][0],
+                    "title": t[1][0],
                     "score": int(100 * t[1][1]),
                     "value": f"heatmap_{t[0]}",
                 },
@@ -213,6 +214,7 @@ class XaitkSaliency:
                 {
                     "value": f"heatmap_{i}",
                     "text": f"{v[0]} - {int(v[1] * 100)}",
+                    "title": f"{v[0]} - {int(v[1] * 100)}",
                     "id": i + 1,
                     "class": v[0],
                     "probability": int(v[1] * 100),

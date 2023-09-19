@@ -1,4 +1,4 @@
-from trame.widgets import html, vuetify, plotly, trame
+from trame.widgets import html, plotly, trame, vuetify3 as vuetify
 from xaitk_saliency_demo.app import config
 
 import multiprocessing
@@ -20,9 +20,12 @@ class IconButton(vuetify.VBtn):
 
 class CardContainer(vuetify.VCard):
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+        super().__init__(variant="outlined", **kwargs)
         with self:
-            self.header = vuetify.VCardTitle()
+            with vuetify.VCardTitle():
+                self.header = vuetify.VRow(
+                    classes="align-center pa-0 ma-0", style="min-height: 40px;"
+                )
             vuetify.VDivider()
             self.content = vuetify.VCardText()
 
@@ -31,24 +34,24 @@ class InputImage(html.Div):
     def __init__(self, input, **kwargs):
         _img_url = f"{input}_img_url"
         _name = f"{input}_name"
-        super().__init__(style="position: relative;", v_show=(_img_url,))
+        super().__init__(
+            style="position: relative; width: 200px; height: 200px;", v_show=(_img_url,)
+        )
         with self:
             vuetify.VImg(
                 aspect_ratio=1,
                 src=(_img_url, None),
-                classes="elevation-2 ma-2",
-                max_height="200px",
-                max_width="200px",
-                min_height="200px",
-                min_width="200px",
+                classes="ma-2",
                 **kwargs,
             )
             IconButton(
                 "mdi-close-thick",
-                absolute=True,
-                style="top: -2px; right: -2px; background: white;",
-                outlined=True,
-                x_small=True,
+                position="absolute",
+                # location="top right",
+                style="top: 15px; right: -5px; background: white;",
+                variant="outlined",
+                density="compact",
+                size="small",
                 click=f"{_img_url} = null",
                 **kwargs,
             )
@@ -105,6 +108,7 @@ class Toolbar:
             items=("TOP_K_available", list(range(5, 11))),
             **config.STYLE_COMPACT,
             style="max-width: 70px",
+            classes="mr-4",
         )
         vuetify.VProgressLinear(
             indeterminate=True,
@@ -123,9 +127,10 @@ class InputSection(CardContainer):
             vuetify.VSpacer()
             IconButton(
                 "mdi-image-plus",
-                small=True,
+                size="small",
+                variant="flat",
                 v_show=("input_needed", True),
-                click="input_file=null; $refs.file_form.reset(); $refs.input_file.click()",
+                click="input_file=null; trame.refs.file_form.reset(); trame.refs.input_file.click()",
             )
 
         with self.content:
@@ -151,7 +156,8 @@ class ModelExecutionSection(CardContainer):
         with self.header as header:
             IconButton(
                 "mdi-run-fast",
-                small=True,
+                size="small",
+                variant="flat",
                 disabled=("input_needed",),
                 classes="mr-2",
                 click=run,
@@ -159,11 +165,10 @@ class ModelExecutionSection(CardContainer):
             header.add_child("Model execution")
 
         with self.content as content:
-            content.style = "min-height: 224px"
-            content.classes = "d-flex flex-shrink-1"
+            content.classes = "d-flex flex-shrink-1 pb-0"
             # classes UI
             _chart = plotly.Figure(
-                style="width: 100%; height: 100%;",
+                style="width: 100%; height: 200px;",
                 v_show=("task_active === 'classification' && !input_needed",),
                 display_mode_bar=False,
             )
@@ -176,7 +181,7 @@ class ModelExecutionSection(CardContainer):
                 size=192,
                 width=15,
                 color="teal",
-                value=("model_viz_similarity", 0),
+                model_value=("model_viz_similarity", 0),
             )
 
             # object detection UI
@@ -232,6 +237,7 @@ class XaiParametersSection(CardContainer):
                     v_model=("xai_param__window_size[0]",),
                     type="number",
                     classes="mx-2",
+                    variant="underlined",
                     change="flushState('xai_param__window_size')",
                 )
                 vuetify.VTextField(
@@ -239,6 +245,7 @@ class XaiParametersSection(CardContainer):
                     v_model=("xai_param__window_size[1]",),
                     type="number",
                     classes="mx-2",
+                    variant="underlined",
                     change="flushState('xai_param__window_size')",
                 )
 
@@ -248,6 +255,7 @@ class XaiParametersSection(CardContainer):
                     v_model=("xai_param__stride[0]",),
                     type="number",
                     classes="mx-2",
+                    variant="underlined",
                     change="flushState('xai_param__stride')",
                 )
                 vuetify.VTextField(
@@ -255,6 +263,7 @@ class XaiParametersSection(CardContainer):
                     v_model=("xai_param__stride[1]",),
                     type="number",
                     classes="mx-2",
+                    variant="underlined",
                     change="flushState('xai_param__stride')",
                 )
             vuetify.VTextField(
@@ -262,12 +271,14 @@ class XaiParametersSection(CardContainer):
                 v_show=("xai_params_to_show.includes('n')",),
                 v_model=("xai_param__n", 1000),
                 type="number",
+                variant="underlined",
             )
             vuetify.VTextField(
                 label="Spatial resolution of the small masking grid",
                 v_show=("xai_params_to_show.includes('s')",),
                 v_model=("xai_param__s", 8),
                 type="number",
+                variant="underlined",
             )
             with vuetify.VCol(v_show=("xai_params_to_show.includes('s_tuple')",)):
                 vuetify.VRow(
@@ -280,12 +291,14 @@ class XaiParametersSection(CardContainer):
                         v_model_number=("xai_param__s_tuple[0]",),
                         change="flushState('xai_param__s_tuple')",
                         type="number",
+                        variant="underlined",
                         classes="mr-1 pt-1",
                     )
                     vuetify.VTextField(
                         v_model_number=("xai_param__s_tuple[1]",),
                         change="flushState('xai_param__s_tuple')",
                         type="number",
+                        variant="underlined",
                         classes="ml-1 pt-1",
                     )
             vuetify.VSlider(
@@ -299,13 +312,16 @@ class XaiParametersSection(CardContainer):
                 step="0.01",
                 thumb_size="24",
                 thumb_label="always",
-                classes="my-4",
+                density="compact",
+                track_size=1,
+                classes="mt-4",
             )
             vuetify.VTextField(
                 label="Seed",
                 v_show=("xai_params_to_show.includes('seed')",),
                 v_model=("xai_param__seed", 1234),
                 type="number",
+                variant="underlined",
                 hint="A seed to pass into the constructed random number generator to allow for reproducibility",
                 persistent_hint=True,
                 classes="my-4",
@@ -314,13 +330,16 @@ class XaiParametersSection(CardContainer):
                 label="Threads",
                 v_show=("xai_params_to_show.includes('threads')",),
                 v_model=("xai_param__threads", NB_THREADS),
-                min="0",
-                max="32",
+                min=0,
+                max=32,
+                step=1,
                 hint="The number of threads to utilize when generating masks. If this is <=0 or None, no threading is used and processing is performed in-line serially.",
                 persistent_hint=True,
                 thumb_size="24",
                 thumb_label="always",
-                classes="my-6",
+                density="compact",
+                track_size=1,
+                classes="mt-4",
             )
             vuetify.VSelect(
                 label="Proximity Metric",
@@ -330,6 +349,7 @@ class XaiParametersSection(CardContainer):
                     "xai_param__proximity_metric_available",
                     config.PROXIMITY_METRIC_AVAILABLE,
                 ),
+                variant="underlined",
             )
             vuetify.VSwitch(
                 label="Debiased",
@@ -348,26 +368,29 @@ class XaiExecutionSection(CardContainer):
         with self.header:
             IconButton(
                 "mdi-run-fast",
-                small=True,
+                size="small",
                 classes="mr-2",
                 click=run,
+                variant="flat",
             )
             self.header.add_child("XAI")
             vuetify.VSpacer()
             vuetify.VTextField(
-                label="Min",
+                prepend_icon="mdi-water-minus",
+                # label="Min",
                 v_model=("xai_viz_color_min", -1),
                 **config.STYLE_COMPACT,
-                style="max-width: 75px",
-                classes="mx-1",
+                style="max-width: 90px",
+                classes="mx-1 mt-n4",
                 disabled=("xai_viz_heatmap_color_mode !== 'custom'",),
             )
             vuetify.VTextField(
-                label="Max",
+                prepend_icon="mdi-water-plus",
+                # label="Max",
                 v_model=("xai_viz_color_max", 1),
                 **config.STYLE_COMPACT,
-                style="max-width: 75px",
-                classes="mx-1",
+                style="max-width: 90px",
+                classes="mx-1 mt-n4",
                 disabled=("xai_viz_heatmap_color_mode !== 'custom'",),
             )
             vuetify.VSlider(
@@ -375,6 +398,7 @@ class XaiExecutionSection(CardContainer):
                 min=0,
                 max=1,
                 step=0.05,
+                track_size=1,
                 **config.STYLE_COMPACT,
                 style="max-width: 300px",
             )
@@ -382,17 +406,16 @@ class XaiExecutionSection(CardContainer):
                 v_model=("xai_viz_heatmap_color_mode", "full"),
                 mandatory=True,
                 classes="mx-2",
-                **config.STYLE_COMPACT,
+                density="compact",
+                variant="outlined",
             ):
                 for value, icon, show in config.HEAT_MAP_MODES:
                     with vuetify.VBtn(
                         v_show=show,
                         icon=True,
                         value=value,
-                        small=True,
-                        **config.STYLE_COMPACT,
                     ):
-                        vuetify.VIcon(icon, small=True)
+                        vuetify.VIcon(icon, size="small")
 
         with self.content:
             XaiClassificationResults()
@@ -426,8 +449,8 @@ class XaiClassificationResults(html.Div):
                 heatmap_color_range=("xai_viz_heatmap_color_range", [-1, 1]),
                 heatmap_color_mode=("xai_viz_heatmap_color_mode",),
                 heatmap_active=("xai_viz_classification_selected", "heatmap_0"),
-                color_range="[xai_viz_color_min, xai_viz_color_max] = $event",
-                full_range="full_range = $event",
+                color_range_change="[xai_viz_color_min, xai_viz_color_max] = $event",
+                full_range_change="full_range = $event",
             )
 
 
@@ -449,8 +472,8 @@ class XaiSimilarityResults(html.Div):
                 heatmap_color_range=("xai_viz_heatmap_color_range", [-1, 1]),
                 heatmap_color_mode=("xai_viz_heatmap_color_mode",),
                 heatmap_active="heatmap_0",
-                color_range="[xai_viz_color_min, xai_viz_color_max] = $event",
-                full_range="full_range = $event",
+                color_range_change="[xai_viz_color_min, xai_viz_color_max] = $event",
+                full_range_change="full_range = $event",
             )
 
 
@@ -481,6 +504,6 @@ class XaiDetectionResults(html.Div):
                 heatmap_color_mode=("xai_viz_heatmap_color_mode",),
                 heatmap_opacity=("xai_viz_heatmap_opacity",),
                 heatmap_active=("xai_viz_detection_selected", "heatmap_0"),
-                color_range="[xai_viz_color_min, xai_viz_color_max] = $event",
-                full_range="full_range = $event",
+                color_range_change="[xai_viz_color_min, xai_viz_color_max] = $event",
+                full_range_change="full_range = $event",
             )
