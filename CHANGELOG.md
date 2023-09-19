@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.4.0 (2023-09-19)
+
+### Feature
+
+* **vue3:** Migrate app to use vue3 ([`becb7b2`](https://github.com/XAITK/xaitk-saliency-web-demo/commit/becb7b2a4b5c894af37b9e4e01a44ba004e672fc))
+
 ## v2.3.1 (2023-08-04)
 
 ### Fix
