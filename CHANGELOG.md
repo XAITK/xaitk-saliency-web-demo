@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.4.1 (2023-09-29)
+
+### Fix
+
+* Update trame to streamline jupyter usage ([`21fa6cb`](https://github.com/XAITK/xaitk-saliency-web-demo/commit/21fa6cb50a615dbacddb07660cad13512d82297d))
+
 ## v2.4.0 (2023-09-19)
 
 ### Feature
