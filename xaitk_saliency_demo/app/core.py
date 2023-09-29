@@ -22,22 +22,13 @@ logger = logging.getLogger("xaitks_saliency_demo")
 @TrameApp()
 class XaitkSaliency:
     def __init__(self, server):
-        if server is None:
-            server = get_server()
-
-        if isinstance(server, str):
-            server = get_server(server)
-
-        self.server = server
+        self.server = get_server(server, client_type="vue3")
         self._task = None
         self._model = None
         self._xaitk_config = None
         self._image_1 = None
         self._image_2 = None
         self._layout = None
-
-        # Fix version of vue
-        server.client_type = "vue3"
 
         # State defaults
         self.state.setdefault("input_expected", 1)

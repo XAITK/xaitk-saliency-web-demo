@@ -4,12 +4,7 @@ from .ml.models import update_ml_device
 
 
 def main(server=None, **kwargs):
-    # Get or create server
-    if server is None:
-        server = get_server()
-
-    if isinstance(server, str):
-        server = get_server(server)
+    server = get_server(server, client_type="vue3")
 
     # CLI
     server.cli.add_argument(
