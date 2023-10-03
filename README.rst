@@ -49,9 +49,9 @@ Within Jupyter you can do the following
 
 .. code-block:: console
 
-    from xaitk_saliency_demo.app.jupyter import show
-    show()
-
+    from xaitk_saliency_demo.app.jupyter import create_app
+    xaitk = await create_app()
+    xaitk.gui
 
 
 
