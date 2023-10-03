@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v2.4.2 (2023-10-03)
+
+### Fix
+
+* **jupyter:** Allow extension usage ([`fc79895`](https://github.com/XAITK/xaitk-saliency-web-demo/commit/fc79895be2f8f9de08f93516ea226b179ae4053c))
+
+### Documentation
+
+* **readme:** Update README.rst ([`acee892`](https://github.com/XAITK/xaitk-saliency-web-demo/commit/acee892206bd2c9850dbb90d71005603a2d46295))
+
 ## v2.4.1 (2023-09-29)
 
 ### Fix
