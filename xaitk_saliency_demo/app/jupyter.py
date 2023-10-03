@@ -15,7 +15,7 @@ async def create_app(server=None):
 
     # Create app
     app = XaitkSaliency(server)
-    if os.environ.get("JUPYTERHUB_SERVICE_PREFIX"):
+    if not os.environ.get("TRAME_IFRAME_BUILDER") and os.environ.get("JUPYTERHUB_SERVICE_PREFIX"):
         app.gui.iframe_builder = "jupyter-hub"
 
     # Start server and wait for it to be ready
