@@ -5,6 +5,9 @@ import numpy as np
 from scipy.special import softmax
 from sklearn.metrics.pairwise import cosine_similarity
 from ubelt import grabdata
+from PIL import Image
+from transformers import pipeline
+
 
 # pytorch
 import torch
@@ -14,6 +17,7 @@ import torchvision.models as models
 # xaitk-saliency
 from smqtk_detection.impls.detect_image_objects.resnet_frcnn import ResNetFRCNN
 from smqtk_detection.impls.detect_image_objects.centernet import CenterNetVisdrone
+
 
 # labels + transform
 from .assets import (
@@ -103,6 +107,36 @@ class AbstractModel:
         return self._model
 
 
+class ImagenetModel(AbstractModel):
+    def get_labels(self):
+        return imagenet_categories
+
+
+class TransformersModel(AbstractModel):
+
+    TRANSFORMERS_PREFIX = "transformers:"
+
+    @staticmethod
+    def is_transformers_model(model_name: str) -> bool:
+        return model_name.startswith(TransformersModel.TRANSFORMERS_PREFIX)
+
+    def __init__(self, server, model_name, device=None):
+        if device is None:
+            device = DEVICE
+        hub_id = model_name[len(self.TRANSFORMERS_PREFIX) :]
+        model = pipeline(
+            model=hub_id,
+            device=device,
+            use_fast=True,
+            function_to_apply="none",
+        )
+        super().__init__(server, model)
+
+    def get_labels(self):
+        labels = self._model.model.config.id2label
+        return [labels[i] for i in range(len(labels))]
+
+
 # -----------------------------------------------------------------------------
 # Classification
 # -----------------------------------------------------------------------------
@@ -124,10 +158,10 @@ class ResNetPredict:
 class ClassificationRun:
     def run(self, input, *_):
         preds = self.predict(input)
-        preds = softmax(preds)
         topk = np.argsort(-preds)[: self.state.TOP_K]
-        output = [(imagenet_categories[i], preds[i]) for i in topk]
-
+        scores = softmax(preds)
+        labels = self.get_labels()
+        output = [(labels[i], scores[i]) for i in topk]
         # store for later
         self.topk = topk
 
@@ -139,19 +173,38 @@ class ClassificationRun:
         }
 
 
-class ClassificationResNet50(AbstractModel, ResNetPredict, ClassificationRun):
+class ClassificationResNet50(ImagenetModel, ResNetPredict, ClassificationRun):
     def __init__(self, server):
         super().__init__(server, models.resnet50(pretrained=True))
 
 
-class ClassificationAlexNet(AbstractModel, ResNetPredict, ClassificationRun):
+class ClassificationAlexNet(ImagenetModel, ResNetPredict, ClassificationRun):
     def __init__(self, server):
         super().__init__(server, models.alexnet(pretrained=True))
 
 
-class ClassificationVgg16(AbstractModel, ResNetPredict, ClassificationRun):
+class ClassificationVgg16(ImagenetModel, ResNetPredict, ClassificationRun):
     def __init__(self, server):
         super().__init__(server, models.vgg16(pretrained=True))
+
+
+class TransformersClassificationModel(TransformersModel, ClassificationRun):
+    def predict(self, input) -> np.ndarray:
+        image = Image.fromarray(input)
+        model_inputs = self._model.preprocess(image)
+        model_outputs = self._model.forward(model_inputs)
+
+        # copied from transformers.pipelines.image_classification::postprocess
+        outputs = model_outputs["logits"][0]
+        if self._model.framework == "pt" and outputs.dtype in (
+            torch.bfloat16,
+            torch.float16,
+        ):
+            outputs = outputs.to(torch.float32).numpy()
+        else:
+            outputs = outputs.numpy()
+
+        return outputs
 
 
 # -----------------------------------------------------------------------------
@@ -295,10 +348,10 @@ def get_model(server, model_name):
     if model_name in MODEL_INSTANCES[server]:
         return MODEL_INSTANCES[server][model_name]
 
-    try:
-        constructor = globals()[model_name]
-        MODEL_INSTANCES[server][model_name] = constructor(server)
-    except KeyError:
-        logger.info(f"Could not find {model_name} in {globals().keys()}")
+    if TransformersModel.is_transformers_model(model_name):
+        model = TransformersClassificationModel(server, model_name)
+    else:
+        model = globals()[model_name](server)
+    MODEL_INSTANCES[server][model_name] = model
 
     return MODEL_INSTANCES[server].get(model_name)

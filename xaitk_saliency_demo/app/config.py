@@ -39,8 +39,16 @@ TASK_DEPENDENCY = {
             {"title": "Sliding Window Stack", "value": "SlidingWindowStack"},
         ],
         # Task => model
-        "model_active": "ClassificationResNet50",
+        "model_active": "transformers:microsoft/resnet-50",
         "model_available": [
+            {
+                "title": "microsoft/resnet-50",
+                "value": "transformers:microsoft/resnet-50",
+            },
+            {
+                "title": "google/vit-base-patch16-224",
+                "value": "transformers:google/vit-base-patch16-224",
+            },
             {"title": "ResNet-50", "value": "ClassificationResNet50"},
             {"title": "AlexNet", "value": "ClassificationAlexNet"},
             {"title": "VGG-16", "value": "ClassificationVgg16"},
