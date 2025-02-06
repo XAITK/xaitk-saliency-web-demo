@@ -124,6 +124,22 @@ class DescrModel(ImageDescriptorGenerator):
         return {}
 
 
+class TransformersDescrModel(ImageDescriptorGenerator):
+    def __init__(self, model):
+        self.model = model
+
+    @torch.no_grad()
+    def generate_arrays_from_images(
+        self, img_mat_iter: Iterable[np.ndarray]
+    ) -> Iterable[np.ndarray]:
+        for img in img_mat_iter:
+            yield self.model.predict(img).squeeze()
+
+    def get_config(self) -> Dict[str, Any]:
+        # Required by a parent class. Will not be used in this context.
+        return {}
+
+
 # -----------------------------------------------------------------------------
 class Saliency:
     def __init__(self, model, name, params):
@@ -160,7 +176,12 @@ class ClassificationSaliency(Saliency):
 class SimilaritySaliency(Saliency):
     def run(self, reference, query):
         self._saliency.fill = FILL
-        sal = self._saliency(reference, [query], DescrModel(self._model))
+        model = (
+            DescrModel(self._model)
+            if not isinstance(self._model, TransformersModel)
+            else TransformersDescrModel(self._model)
+        )
+        sal = self._saliency(reference, [query], model)
         return {
             "type": "similarity",
             "saliency": sal,
