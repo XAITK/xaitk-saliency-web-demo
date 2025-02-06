@@ -1,14 +1,12 @@
-import io
-import base64
 import logging
 import numpy as np
 import pandas as pd
-from PIL import Image
 import plotly.express as px
 
 from . import config, xaitk_widgets
 from .ml.models import get_model
 from .ml.xai import get_saliency
+from .image import convert_to_base64, preprocess_image
 
 from trame.decorators import TrameApp, change, life_cycle
 from trame.app import get_server
@@ -95,11 +93,11 @@ class XaitkSaliency:
     def set_saliency_method(self, name, params):
         self._xaitk_config = {"name": name, "params": params}
 
-    def set_image_1(self, bytes_content):
-        self._image_1 = np.array(Image.open(io.BytesIO(bytes_content)))
+    def set_image_1(self, img):
+        self._image_1 = np.array(img)
 
-    def set_image_2(self, bytes_content):
-        self._image_2 = np.array(Image.open(io.BytesIO(bytes_content)))
+    def set_image_2(self, img):
+        self._image_2 = np.array(img)
 
     def run_model(self):
         return self._model.run(self._image_1, self._image_2)
@@ -315,16 +313,17 @@ class XaitkSaliency:
 
         self.reset_model_execution()
 
+        img = preprocess_image(input_file)
         # Make file available as image on HTML side
-        _url = f"data:{input_file.get('type')};base64,{base64.encodebytes(input_file.get('content')).decode('utf-8')}"
+        _url = convert_to_base64(img)
         if not input_1_img_url or input_expected == 1:
             self.state.input_1_img_url = _url
-            self.set_image_1(input_file.get("content"))
+            self.set_image_1(img)
             if input_expected == 1:
                 self.update_model_execution()
         elif not input_2_img_url and input_expected == 2:
             self.state.input_2_img_url = _url
-            self.set_image_2(input_file.get("content"))
+            self.set_image_2(img)
             self.update_model_execution()
 
     @change("input_1_img_url", "input_2_img_url")
