@@ -354,6 +354,16 @@ class XaitkSaliency:
         except Exception:
             pass
 
+    def on_add_model(self):
+        self.state.show_add_model = False
+        model_name = self.state.new_model_name
+        self.state.new_model_name = ""
+        model_value = f"transformers:{self._task}:{model_name}"
+        model = {"title": model_name, "value": model_value}
+        config.TASK_DEPENDENCY[self._task]["model_available"].append(model)
+        self.state.model_available = [*self.state.model_available, model]
+        self.state.model_active = model_value
+
     # -----------------------------------------------------
     # GUI
     # -----------------------------------------------------
@@ -367,7 +377,7 @@ class XaitkSaliency:
             layout.title.set_text(self.state.trame__title)  # toolbar
 
             with layout.toolbar:
-                xaitk_widgets.Toolbar()
+                xaitk_widgets.Toolbar(self.on_add_model)
 
             with layout.content:
                 with vuetify.VContainer(fluid=True):

@@ -6,7 +6,7 @@ TASK_DEPENDENCY = {
             {"title": "SBSM", "value": "SBSMStack"},
         ],
         # Task => model
-        "model_active": "SimilarityResNet50",
+        "model_active": "transformers:similarity:microsoft/resnet-50",
         "model_available": [
             {
                 "title": "microsoft/resnet-50",
