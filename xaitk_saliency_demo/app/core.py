@@ -359,9 +359,16 @@ class XaitkSaliency:
         model_name = self.state.new_model_name
         self.state.new_model_name = ""
         model_value = f"transformers:{self._task}:{model_name}"
-        model = {"title": model_name, "value": model_value}
-        config.TASK_DEPENDENCY[self._task]["model_available"].append(model)
-        self.state.model_available = [*self.state.model_available, model]
+        new_model = {"title": model_name, "value": model_value}
+        model_options = config.TASK_DEPENDENCY[self._task]["model_available"]
+        if not any(m["value"] == model_value for m in model_options):
+            config.TASK_DEPENDENCY[self._task]["model_available"] = [
+                *model_options,
+                new_model,
+            ]
+            self.state.model_available = config.TASK_DEPENDENCY[self._task][
+                "model_available"
+            ]
         self.state.model_active = model_value
 
     # -----------------------------------------------------

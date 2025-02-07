@@ -178,15 +178,15 @@ class AddModelDialog(vuetify.VDialog):
                     with vuetify.VBtn(
                         color="blue-grey",
                         variant="text",
-                        click="show_add_model = false",
-                    ):
-                        html.Div("Cancel")
-                    with vuetify.VBtn(
-                        color="blue-grey",
-                        variant="text",
                         click=add_model,
                     ):
                         html.Div("Add")
+                    with vuetify.VBtn(
+                        color="blue-grey",
+                        variant="text",
+                        click="show_add_model = false",
+                    ):
+                        html.Div("Cancel")
 
 
 class ModelExecutionSection(CardContainer):
