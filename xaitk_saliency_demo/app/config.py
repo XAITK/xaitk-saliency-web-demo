@@ -6,12 +6,8 @@ TASK_DEPENDENCY = {
             {"title": "SBSM", "value": "SBSMStack"},
         ],
         # Task => model
-        "model_active": "transformers:similarity:microsoft/resnet-50",
+        "model_active": "SimilarityResNet50",
         "model_available": [
-            {
-                "title": "microsoft/resnet-50",
-                "value": "transformers:similarity:microsoft/resnet-50",
-            },
             {"title": "ResNet-50", "value": "SimilarityResNet50"},
             {"title": "AlexNet", "value": "SimilarityAlexNet"},
             {"title": "VGG-16", "value": "SimilarityVgg16"},
@@ -43,8 +39,11 @@ TASK_DEPENDENCY = {
             {"title": "Sliding Window Stack", "value": "SlidingWindowStack"},
         ],
         # Task => model
-        "model_active": "transformers:classification:microsoft/resnet-50",
+        "model_active": "ClassificationResNet50",
         "model_available": [
+            {"title": "ResNet-50", "value": "ClassificationResNet50"},
+            {"title": "AlexNet", "value": "ClassificationAlexNet"},
+            {"title": "VGG-16", "value": "ClassificationVgg16"},
             {
                 "title": "microsoft/resnet-50",
                 "value": "transformers:classification:microsoft/resnet-50",
@@ -53,9 +52,6 @@ TASK_DEPENDENCY = {
                 "title": "google/vit-base-patch16-224",
                 "value": "transformers:classification:google/vit-base-patch16-224",
             },
-            {"title": "ResNet-50", "value": "ClassificationResNet50"},
-            {"title": "AlexNet", "value": "ClassificationAlexNet"},
-            {"title": "VGG-16", "value": "ClassificationVgg16"},
         ],
         # Task => input
         "input_expected": 1,

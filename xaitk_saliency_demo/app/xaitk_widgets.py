@@ -96,7 +96,7 @@ class Toolbar:
         with vuetify.VBtn(
             "Add Model",
             click="show_add_model = true",
-            v_show=("['classification', 'similarity'].includes(task_active)",),
+            v_show=("['classification'].includes(task_active)",),
         ):
             vuetify.VIcon("mdi-plus")
         AddModelDialog(add_model)

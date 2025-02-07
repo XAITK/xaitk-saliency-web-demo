@@ -260,25 +260,6 @@ class SimilarityVgg16(AbstractModel, ResNetPredict, SimilarityRun):
         )
 
 
-class SimilarityTransformers(TransformersModel, SimilarityRun):
-    def __init__(self, server, model_name):
-        super().__init__(server, model_name)
-        self._model.model.config.output_hidden_states = True
-
-    def predict(self, input) -> np.ndarray:
-        image = Image.fromarray(input)
-        processed = self._model.image_processor(images=image, return_tensors="pt")
-        device = next(self._model.model.parameters()).device
-        processed = {
-            k: (v.to(device) if hasattr(v, "to") else v) for k, v in processed.items()
-        }
-        outputs = self._model.model(**processed)
-
-        feature_descriptor = outputs.hidden_states[-1].mean(dim=1)
-
-        return feature_descriptor[0].cpu().detach().numpy().flatten()
-
-
 # -----------------------------------------------------------------------------
 # Detection
 # -----------------------------------------------------------------------------
@@ -379,8 +360,6 @@ def get_model(server, model_name):
         task = model_name.split(":")[1]
         if task == "classification":
             model = TransformersClassificationModel(server, model_name)
-        elif task == "similarity":
-            model = SimilarityTransformers(server, model_name)
         else:
             raise ValueError(f"Unknown transformers task: {task}")
     else:
