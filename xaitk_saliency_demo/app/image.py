@@ -3,9 +3,16 @@ from io import BytesIO
 from base64 import b64encode
 
 
+MAXIMUM_SIDE_LENGTH = 1024
+
+
 def preprocess_image(input_file):
     img = Image.open(BytesIO(input_file.get("content")))
-    img = img.convert("RGB")  # algorthims expect RGB images
+    img = img.convert("RGB")  # algorithms expect RGB images
+    # keep XAI algorithms from running out of memory
+    if max(img.width, img.height) > MAXIMUM_SIDE_LENGTH:
+        ratio = MAXIMUM_SIDE_LENGTH / max(img.width, img.height)
+        img = img.resize((int(img.width * ratio), int(img.height * ratio)))
     return img
 
 
