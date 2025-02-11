@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v2.4.3 (2025-02-11)
+
+### Fix
+
+* **images:** Avoid XAI algos running out of memory ([`a719420`](https://github.com/XAITK/xaitk-saliency-web-demo/commit/a719420e0ff4397aceacd97882bf35f0cdf3258b))
+* **images:** Support grayscale and non browser image formats ([`f60d304`](https://github.com/XAITK/xaitk-saliency-web-demo/commit/f60d304365312ecc9c68ae9a5c7c6b9ee3667479))
+
 ## v2.4.2 (2023-10-03)
 
 ### Fix
