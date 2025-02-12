@@ -77,7 +77,7 @@ class InputImage(html.Div):
 
 
 class Toolbar:
-    def __init__(self):
+    def __init__(self, add_model):
         vuetify.VSpacer()
         vuetify.VSelect(
             label="Task",
@@ -93,6 +93,13 @@ class Toolbar:
             **config.STYLE_COMPACT,
             **config.STYLE_SELECT,
         )
+        with vuetify.VBtn(
+            "Add Model",
+            click="show_add_model = true",
+            v_show=("['classification'].includes(task_active)",),
+        ):
+            vuetify.VIcon("mdi-plus")
+        AddModelDialog(add_model)
         vuetify.VSelect(
             label="Saliency Algorithm",
             v_show="saliency_available.length > 1",
@@ -144,6 +151,42 @@ class InputSection(CardContainer):
                     change="input_file=$event.target.files[0]",
                     __events=["change"],
                 )
+
+
+class AddModelDialog(vuetify.VDialog):
+    def __init__(self, add_model):
+        super().__init__(v_model=("show_add_model", False), width="500")
+        with self:
+            with vuetify.VCard():
+                with vuetify.VCardTitle() as header:
+                    header.add_child("Add Hugging Face Hub Model")
+                with vuetify.VCardText():
+                    with html.P(
+                        "Enter the name of an image model hosted on the",
+                        style="padding-bottom: 10px;",
+                    ):
+                        html.A(
+                            "Hugging Face Hub",
+                            href="https://huggingface.co/models?pipeline_tag=image-classification&sort=trending",
+                            target="_blank",
+                        )
+                    vuetify.VTextField(
+                        label="Model Name", v_model=("new_model_name", "")
+                    )
+                with vuetify.VCardActions():
+                    vuetify.VSpacer()
+                    with vuetify.VBtn(
+                        color="blue-grey",
+                        variant="text",
+                        click=add_model,
+                    ):
+                        html.Div("Add")
+                    with vuetify.VBtn(
+                        color="blue-grey",
+                        variant="text",
+                        click="show_add_model = false",
+                    ):
+                        html.Div("Cancel")
 
 
 class ModelExecutionSection(CardContainer):

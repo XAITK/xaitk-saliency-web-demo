@@ -26,6 +26,7 @@ from smqtk_detection import DetectImageObjects
 
 # labels
 from .assets import imagenet_categories, imagenet_model_loader
+from .models import TransformersModel
 
 import logging
 
@@ -85,6 +86,25 @@ class ClfModel(ClassifyImage):
         return {}
 
 
+class TransformersClfModel(ClassifyImage):
+    def __init__(self, model, idx):
+        self.model = model
+        self.idx = idx
+
+    def get_labels(self):
+        all_labels = self.model.get_labels()
+        return [all_labels[i] for i in self.idx]
+
+    def classify_images(self, image_iter):
+        for img in image_iter:
+            preds = self.model.predict(img)
+            yield dict(zip(self.get_labels(), preds[self.idx]))
+
+    def get_config(self):
+        # Required by a parent class. Will not be used in this context.
+        return {}
+
+
 # SMQTK black-box descriptor generator
 class DescrModel(ImageDescriptorGenerator):
     def __init__(self, model):
@@ -125,7 +145,12 @@ class ClassificationSaliency(Saliency):
     def run(self, input, *_):
         topk = self._model.topk
         self._saliency.fill = FILL
-        sal = self._saliency(input, ClfModel(self._model, topk))
+        model = (
+            ClfModel(self._model, topk)
+            if not isinstance(self._model, TransformersModel)
+            else TransformersClfModel(self._model, topk)
+        )
+        sal = self._saliency(input, model)
         return {
             "type": "classification",
             "saliency": sal,

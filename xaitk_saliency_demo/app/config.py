@@ -44,6 +44,14 @@ TASK_DEPENDENCY = {
             {"title": "ResNet-50", "value": "ClassificationResNet50"},
             {"title": "AlexNet", "value": "ClassificationAlexNet"},
             {"title": "VGG-16", "value": "ClassificationVgg16"},
+            {
+                "title": "microsoft/resnet-50",
+                "value": "transformers:classification:microsoft/resnet-50",
+            },
+            {
+                "title": "google/vit-base-patch16-224",
+                "value": "transformers:classification:google/vit-base-patch16-224",
+            },
         ],
         # Task => input
         "input_expected": 1,
