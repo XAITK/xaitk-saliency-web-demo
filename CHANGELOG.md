@@ -2,6 +2,20 @@
 
 <!--next-version-placeholder-->
 
+## v2.5.0 (2025-02-12)
+
+### Feature
+
+* Add button to add transformers model ([`bdf983d`](https://github.com/XAITK/xaitk-saliency-web-demo/commit/bdf983dd1ec82b8a3820464c6b4540ceac5da337))
+* **models:** For similarity, support transformers model ([`13b744e`](https://github.com/XAITK/xaitk-saliency-web-demo/commit/13b744e806323aa3b5b05edbc34a14874b36961e))
+* **models:** Add transformers.pipeline model ([`6d3d927`](https://github.com/XAITK/xaitk-saliency-web-demo/commit/6d3d9271c95576df37f4edf5dd8c7bed4039a8a8))
+
+### Fix
+
+* **setup.cfg:** Normalize name to avoid pypi deprecation ([`8d84d0b`](https://github.com/XAITK/xaitk-saliency-web-demo/commit/8d84d0b216ad5353041bc44b5d959450b74db3f7))
+* Remove non working transformers for similarity ([`22873a5`](https://github.com/XAITK/xaitk-saliency-web-demo/commit/22873a56b021959e71c3076bfc969f2b161498d3))
+* Dont add model twice, swap Add Cancel buttons ([`f1db289`](https://github.com/XAITK/xaitk-saliency-web-demo/commit/f1db2897791cf67d42a0a85e044a158f8d196878))
+
 ## v2.4.3 (2025-02-11)
 
 ### Fix
