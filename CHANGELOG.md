@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.5.1 (2025-02-28)
+
+### Fix
+
+* **deps:** Bump xaitk-saliency from 0.7.0 to 0.12.0 ([`f459c92`](https://github.com/XAITK/xaitk-saliency-web-demo/commit/f459c92ecc6a00003b56799fbf37cfbc6b37f607))
+
 ## v2.5.0 (2025-02-12)
 
 ### Feature
