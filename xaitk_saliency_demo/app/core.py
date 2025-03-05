@@ -2,6 +2,7 @@ import logging
 import numpy as np
 import pandas as pd
 import plotly.express as px
+import ast
 
 from . import config, xaitk_widgets
 from .ml.models import get_model
@@ -167,8 +168,8 @@ class XaitkSaliency:
             results = self.run_model()
 
         # classes
-        classes = results.get("classes", [])
-        df = pd.DataFrame(classes, columns=["Class", "Score"])
+        self.classes = results.get("classes", [])
+        df = pd.DataFrame(self.classes, columns=["Class", "Score"])
         df.sort_values("Score", ascending=True, inplace=True)
 
         chart = px.bar(df, x="Score", y="Class", template="simple_white")
@@ -190,7 +191,7 @@ class XaitkSaliency:
                     "score": int(100 * t[1][1]),
                     "value": f"heatmap_{t[0]}",
                 },
-                enumerate(classes),
+                enumerate(self.classes),
             )
         )
 
@@ -223,13 +224,41 @@ class XaitkSaliency:
 
         if output.get("type") == "classification":
             _xai_saliency = output.get("saliency")
-            nb_classes = _xai_saliency.shape[0]
-            heat_maps = {}
-            for i in range(nb_classes):
-                _key = f"heatmap_{i}"
-                heat_maps[_key] = _xai_saliency[i].ravel().tolist()
+            if self.state.saliency_active == "MCRISEStack":
+                nb_colors = _xai_saliency.shape[0]
+                nb_classes = _xai_saliency.shape[1]
+                heat_maps = {}
+                for i in range(nb_colors):
+                    for j in range(nb_classes):
+                        _key = f"heatmap_{j}_{i}"
+                        heat_maps[_key] = _xai_saliency[i][j].ravel().tolist()
 
-            self.state.xai_viz_classification_heatmaps = heat_maps
+                self.state.xai_viz_classification_selected = "heatmap_0_0"
+                selected_available = list()
+                fill_colors = ast.literal_eval(
+                    self._xaitk_config["params"]["fill_colors"]
+                )
+                for t in enumerate(self.classes):
+                    for i in range(nb_colors):
+                        element = {
+                            "text": f"{t[1][0]} {fill_colors[i]}",
+                            "title": f"{t[1][0]} {fill_colors[i]}",
+                            "score": int(100 * t[1][1]),
+                            "value": f"heatmap_{t[0]}_{i}",
+                        }
+                        selected_available.append(element)
+                self.state.xai_viz_classification_selected_available = (
+                    selected_available
+                )
+                self.state.xai_viz_classification_heatmaps = heat_maps
+            else:
+                nb_classes = _xai_saliency.shape[0]
+                heat_maps = {}
+                for i in range(nb_classes):
+                    _key = f"heatmap_{i}"
+                    heat_maps[_key] = _xai_saliency[i].ravel().tolist()
+
+                self.state.xai_viz_classification_heatmaps = heat_maps
 
         elif output.get("type") == "similarity":
             _xai_saliency = output.get("saliency")
@@ -247,11 +276,21 @@ class XaitkSaliency:
 
             self.state.xai_viz_detection_heatmaps = heat_maps
 
+    def add_color(self):
+        """Executed when:
+        -> btn press in xai parameters section
+        """
+        new_color_hex = self.state["xai_param__current_color"].lstrip("#")
+        new_color_string = list(int(new_color_hex[i : i + 2], 16) for i in (0, 2, 4))
+
+        fill_colors_text = self.state["xai_param__fill_colors"]
+        if len(fill_colors_text) == 2:
+            self.state["xai_param__fill_colors"] = f"[{new_color_string}]"
         else:
-            logger.info(output.get("type"))
-            for key, value in output.items():
-                if key != "type":
-                    logger.info(f"{key}: {value.shape} | {value.dtype}")
+            fill_colors_text = fill_colors_text[:-1]
+            self.state[
+                "xai_param__fill_colors"
+            ] = f"{fill_colors_text}, {new_color_string}]"
 
     # -----------------------------------------------------
     # State management
@@ -394,5 +433,5 @@ class XaitkSaliency:
                             run=self.update_model_execution
                         )
                     with vuetify.VRow(**config.STYLE_ROW):
-                        xaitk_widgets.XaiParametersSection()
+                        xaitk_widgets.XaiParametersSection(add_color=self.add_color)
                         xaitk_widgets.XaiExecutionSection(run=self.update_xai_execution)

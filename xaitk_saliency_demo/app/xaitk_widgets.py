@@ -270,7 +270,7 @@ class ModelExecutionSection(CardContainer):
 
 
 class XaiParametersSection(CardContainer):
-    def __init__(self):
+    def __init__(self, add_color=None):
         super().__init__(classes="ma-4", style="width: 440px;")
         self.header.add_child("XAI parameters")
         with self.content:
@@ -359,6 +359,27 @@ class XaiParametersSection(CardContainer):
                 track_size=1,
                 classes="mt-4",
             )
+            with vuetify.VCol(v_show=("xai_params_to_show.includes('fill_colors')",)):
+                vuetify.VColorPicker(
+                    v_model=("xai_param__current_color", "#000000"),
+                    mode="rgb",
+                    modes=["rgb"],
+                    classes="my-4",
+                )
+                vuetify.VBtn(
+                    text="Add Color",
+                    color="blue-grey",
+                    variant="text",
+                    click=add_color,
+                )
+                vuetify.VTextarea(
+                    label="Fill Colors",
+                    v_show=("xai_params_to_show.includes('fill_colors')",),
+                    v_model=("xai_param__fill_colors", "[]"),
+                    hint="Fill colors to be used when generating masks. Must be a list of [[R1,G1,B1], [R2,G2,B2], ...]",
+                    persistent_hint=True,
+                    classes="my-4",
+                )
             vuetify.VTextField(
                 label="Seed",
                 v_show=("xai_params_to_show.includes('seed')",),

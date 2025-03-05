@@ -37,6 +37,7 @@ TASK_DEPENDENCY = {
         "saliency_available": [
             {"title": "RISE Stack", "value": "RISEStack"},
             {"title": "Sliding Window Stack", "value": "SlidingWindowStack"},
+            {"title": "MCRISE Stack", "value": "MCRISEStack"},
         ],
         # Task => model
         "model_active": "ClassificationResNet50",
@@ -66,6 +67,7 @@ SALIENCY_PARAMS = {
     "RandomGridStack": ["n", "s_tuple", "p1", "seed", "threads"],
     # classification
     "RISEStack": ["n", "s", "p1", "seed", "threads", "debiased"],
+    "MCRISEStack": ["n", "s", "p1", "fill_colors", "seed", "threads"],
     "SlidingWindowStack": ["window_size", "stride", "threads"],
 }
 
@@ -76,6 +78,7 @@ ALL_SALIENCY_PARAMS = {
     "s": int,
     "s_tuple": int,
     "p1": float,
+    "fill_colors": str,
     "seed": int,
     "threads": int,
     "proximity_metric": str,

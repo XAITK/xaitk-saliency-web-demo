@@ -32,6 +32,7 @@
   - **xai_param__debiased**: XAI Saliency possible parameter
   - **xai_param__n**: XAI Saliency possible parameter
   - **xai_param__p1**: XAI Saliency possible parameter
+  - **xai_param__fill_colors**: XAI Saliency possible parameter
   - **xai_param__proximity_metric**: XAI Saliency possible parameter
   - **xai_param__proximity_metric_available**: XAI Saliency possible parameter
   - **xai_param__s**: XAI Saliency possible parameter
