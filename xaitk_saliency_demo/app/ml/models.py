@@ -113,7 +113,6 @@ class ImagenetModel(AbstractModel):
 
 
 class TransformersModel(AbstractModel):
-
     TRANSFORMERS_PREFIX = "transformers:"
 
     @staticmethod

@@ -1,6 +1,7 @@
 from typing import Dict, Any, Iterable
 import numpy as np
 from scipy.special import softmax
+import ast
 
 # pytorch
 import torch
@@ -11,6 +12,7 @@ import torch
 
 from xaitk_saliency.impls.gen_image_similarity_blackbox_sal.sbsm import SBSMStack
 from xaitk_saliency.impls.gen_image_classifier_blackbox_sal.rise import RISEStack
+from xaitk_saliency.impls.gen_image_classifier_blackbox_sal.mc_rise import MCRISEStack
 from xaitk_saliency.impls.gen_image_classifier_blackbox_sal.slidingwindow import (
     SlidingWindowStack,
 )
@@ -50,6 +52,11 @@ SALIENCY_TYPES = {
     "SlidingWindowStack": {
         "_saliency": {
             "class": SlidingWindowStack,
+        },
+    },
+    "MCRISEStack": {
+        "_saliency": {
+            "class": MCRISEStack,
         },
     },
     # Similarity
@@ -137,6 +144,8 @@ class Saliency:
             constructor = value.get("class")
             param_keys = value.get("params", params.keys())
             kwargs = {k: params[k] for k in param_keys}
+            if "fill_colors" in kwargs:
+                kwargs["fill_colors"] = ast.literal_eval(kwargs["fill_colors"])
             logger.info(f"XAI ran with {kwargs}")
             setattr(self, key, constructor(**kwargs))
 
