@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v2.6.0 (2025-03-13)
+
+### Feature
+
+* **xaitk-saliency:** Add MCRISEStack to IC saliency algorithms ([`ff8c669`](https://github.com/XAITK/xaitk-saliency-web-demo/commit/ff8c669bd33c14fe4fab039ff76e70b21e335381))
+
 ## v2.5.1 (2025-02-28)
 
 ### Fix
